@@ -13,6 +13,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
+import cz.roller.game.world.Settings;
+
 @SuppressWarnings("unused")
 public class Cart {
 
@@ -111,8 +113,8 @@ public class Cart {
 		boxSeat.dispose();
 		
 		cartSprite = new Sprite(new Texture(Gdx.files.internal("cart/cart.png")));
-		cartSprite.setSize(cartWidth, cartHeight);
-		cartSprite.setOrigin(cartWidth/2, cartHeight/2);
+		cartSprite.setSize(cartWidth*Settings.TO_PIXELS, cartHeight*Settings.TO_PIXELS);
+		cartSprite.setOrigin(cartSprite.getWidth()/2, cartSprite.getHeight()/2);
 		
 		cartSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
@@ -121,8 +123,8 @@ public class Cart {
 	}
 	
 	public void render(SpriteBatch batch) {
-		cartSprite.setPosition(	body.getPosition().x - cartSprite.getWidth()/2,
-								body.getPosition().y - cartSprite.getHeight()/2);
+		cartSprite.setPosition(	Settings.TO_PIXELS * body.getPosition().x - cartSprite.getWidth()/2,
+								Settings.TO_PIXELS * body.getPosition().y - cartSprite.getHeight()/2);
 		cartSprite.setRotation((float)(body.getAngle()*180/Math.PI));
 		
 		batch.begin();

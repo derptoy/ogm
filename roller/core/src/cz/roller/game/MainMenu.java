@@ -1,7 +1,7 @@
 package cz.roller.game;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.rotateTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.rotateTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
@@ -31,7 +31,6 @@ public class MainMenu implements Screen {
 	private Skin skin;
 	private Image logo;
 	private Clouds clouds;
-	private SpriteBatch batch;
 	private TextButton newGame;
 	private TextButton exit;
 	private Timer timer;
@@ -64,19 +63,20 @@ public class MainMenu implements Screen {
 		skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), new TextureAtlas("ui/atlas.pack"));
 
         newGame = new TextButton("Newgame",skin);
-        newGame.setCenterPosition(-200, 0.5f*stage.getHeight());
-        MoveToAction action = new MoveToAction();
-		action.setPosition(stage.getWidth()/2 - newGame.getWidth()/2, 0.5f*stage.getHeight() - newGame.getHeight()/2);
-		action.setDuration(1);
-		action.setActor(newGame);
-		newGame.addAction(action);
+        newGame.setPosition(stage.getWidth()/2 - newGame.getWidth()/2, 0.5f*stage.getHeight() - newGame.getHeight()/2);
+//        newGame.setCenterPosition(-200, 0.5f*stage.getHeight());
+//        MoveToAction action = new MoveToAction();
+//		action.setPosition(stage.getWidth()/2 - newGame.getWidth()/2, 0.5f*stage.getHeight() - newGame.getHeight()/2);
+//		action.setDuration(1);
+//		action.setActor(newGame);
+//		newGame.addAction(action);
 		newGame.addListener(new ChangeListener() {
 			
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				stage.addAction(sequence(moveTo(0,-stage.getHeight(),1),run(new Runnable() {
+				stage.addAction(sequence(moveTo(0,-stage.getHeight(),0.5f),run(new Runnable() {
 					public void run() {
-						game.setScreen(new MainGame(game));
+						game.setScreen(new LevelSelector(game));
 					}
 				})));
 				
@@ -85,12 +85,13 @@ public class MainMenu implements Screen {
         stage.addActor(newGame);
         
         exit = new TextButton("Exit",skin);
-        exit.setCenterPosition(stage.getWidth()+200, 0.4f*stage.getHeight());
-        action = new MoveToAction();
-		action.setPosition(stage.getWidth()/2 - exit.getWidth()/2, 0.4f*stage.getHeight() - exit.getHeight()/2);
-		action.setDuration(1);
-		action.setActor(exit);
-		exit.addAction(action);
+        exit.setPosition(stage.getWidth()/2 - exit.getWidth()/2, 0.4f*stage.getHeight() - exit.getHeight()/2);
+//        exit.setCenterPosition(stage.getWidth()+200, 0.4f*stage.getHeight());
+//        action = new MoveToAction();
+//		action.setPosition(stage.getWidth()/2 - exit.getWidth()/2, 0.4f*stage.getHeight() - exit.getHeight()/2);
+//		action.setDuration(1);
+//		action.setActor(exit);
+//		exit.addAction(action);
 		exit.addListener(new ChangeListener() {
 			
 			@Override
@@ -104,23 +105,20 @@ public class MainMenu implements Screen {
         Texture tex = new Texture(Gdx.files.internal("ui/menu/logo.png"));
         tex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		logo = new Image(tex);
-		logo.setCenterPosition(stage.getWidth()/2, stage.getHeight()+200);
-		logo.setOrigin(stage.getWidth()/2, stage.getHeight()/2);
-		logo.setRotation(-90);
+		logo.setPosition(stage.getWidth()/2 - logo.getWidth()/2, 0.7f*stage.getHeight() - logo.getHeight()/2);
 		stage.addActor(logo);
 		
-		RotateToAction action2 = new RotateToAction();
-		action2.setRotation(0);
-		action2.setDuration(1);
-		action2.setActor(logo);
-		action = new MoveToAction();
-		action.setPosition(stage.getWidth()/2 - logo.getWidth()/2, 0.7f*stage.getHeight() - logo.getHeight()/2);
-		action.setDuration(1);
-		action.setActor(logo);
-		logo.addAction(new ParallelAction(action, action2));
+//		RotateToAction action2 = new RotateToAction();
+//		action2.setRotation(0);
+//		action2.setDuration(1);
+//		action2.setActor(logo);
+//		action = new MoveToAction();
+//		action.setPosition(stage.getWidth()/2 - logo.getWidth()/2, 0.7f*stage.getHeight() - logo.getHeight()/2);
+//		action.setDuration(1);
+//		action.setActor(logo);
+//		logo.addAction(new ParallelAction(action, action2));
 		
-		// OTHER
-		batch = new SpriteBatch();
+		stage.addAction(sequence(moveTo(0, Gdx.graphics.getHeight()),moveTo(0, 0,0.4f)));
 		
 		clouds = new Clouds();
 		clouds.init(stage);
@@ -133,6 +131,10 @@ public class MainMenu implements Screen {
 			public void run() {
 				logo.setOrigin(logo.getWidth()/2,logo.getHeight());
 				logo.addAction(sequence(rotateTo(5,0.5f), rotateTo(-5,1), rotateTo(0,0.5f)));
+			}
+			
+			@Override
+			public void cancel() {
 				
 			}
 		}, 5, 10);

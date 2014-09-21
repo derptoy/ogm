@@ -45,13 +45,13 @@ public class PersonArm {
 	
 	private void createTextures(String url) {
 		armSprite = new Sprite(new Texture(Gdx.files.internal(url)));
-		armSprite.setSize(armLength, armHeight);
-		armSprite.setOrigin(armLength/2, armHeight/2);
+		armSprite.setSize(Settings.TO_PIXELS*armLength, Settings.TO_PIXELS*armHeight);
+		armSprite.setOrigin(Settings.TO_PIXELS*armLength/2, Settings.TO_PIXELS*armHeight/2);
 		armSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		arm2Sprite = new Sprite(new Texture(Gdx.files.internal(url)));
-		arm2Sprite.setSize(armLength, armHeight);
-		arm2Sprite.setOrigin(armLength/2, armHeight/2);
+		arm2Sprite.setSize(Settings.TO_PIXELS*armLength, Settings.TO_PIXELS*armHeight);
+		arm2Sprite.setOrigin(Settings.TO_PIXELS*armLength/2, Settings.TO_PIXELS*armHeight/2);
 		arm2Sprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 	}
 
@@ -59,6 +59,7 @@ public class PersonArm {
 		// Arm
 		BodyDef armBodyDef = new BodyDef();
 		armBodyDef.type = BodyType.DynamicBody;
+		armBodyDef.position.set(body.getPosition());
 		Body bodyArm = world.createBody(armBodyDef);
 		
 		PolygonShape shapeArm = new PolygonShape();
@@ -91,6 +92,7 @@ public class PersonArm {
 		// Arm 2
 		BodyDef armBodyDef2 = new BodyDef();
 		armBodyDef2.type = BodyType.DynamicBody;
+		armBodyDef2.position.set(body.getPosition());
 		Body bodyArm2 = world.createBody(armBodyDef2);
 
 		PolygonShape shapeArm2 = new PolygonShape();
@@ -122,11 +124,11 @@ public class PersonArm {
 	}
 	
 	public void draw(SpriteBatch batch) {
-		armSprite.setPosition(	arm.getBody().getPosition().x-armSprite.getWidth()/2, 
-								arm.getBody().getPosition().y-armSprite.getHeight()/2);
+		armSprite.setPosition(	Settings.TO_PIXELS*arm.getBody().getPosition().x-armSprite.getWidth()/2, 
+								Settings.TO_PIXELS*arm.getBody().getPosition().y-armSprite.getHeight()/2);
 		armSprite.setRotation((float)(arm.getBody().getAngle()*MathUtils.radiansToDegrees));
-		arm2Sprite.setPosition(	arm2.getBody().getPosition().x-arm2Sprite.getWidth()/2, 
-								arm2.getBody().getPosition().y-arm2Sprite.getHeight()/2);
+		arm2Sprite.setPosition(	Settings.TO_PIXELS*arm2.getBody().getPosition().x-arm2Sprite.getWidth()/2, 
+								Settings.TO_PIXELS*arm2.getBody().getPosition().y-arm2Sprite.getHeight()/2);
 		arm2Sprite.setRotation((float)(arm2.getBody().getAngle()*MathUtils.radiansToDegrees));
 	
 	

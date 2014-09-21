@@ -1,0 +1,53 @@
+terrain.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+_0000_cloud4
+  rotate: false
+  xy: 0, 0
+  size: 286, 194
+  orig: 286, 194
+  offset: 0, 0
+  index: -1
+_0001_cloud3
+  rotate: false
+  xy: 286, 0
+  size: 275, 210
+  orig: 275, 210
+  offset: 0, 0
+  index: -1
+_0002_cloud1
+  rotate: false
+  xy: 561, 0
+  size: 163, 167
+  orig: 163, 167
+  offset: 0, 0
+  index: -1
+_0003_cloud0
+  rotate: false
+  xy: 724, 0
+  size: 287, 140
+  orig: 287, 140
+  offset: 0, 0
+  index: -1
+hill1
+  rotate: false
+  xy: 0, 210
+  size: 320, 240
+  orig: 320, 240
+  offset: 0, 0
+  index: -1
+hill2
+  rotate: false
+  xy: 320, 210
+  size: 320, 240
+  orig: 320, 240
+  offset: 0, 0
+  index: -1
+tree
+  rotate: false
+  xy: 640, 210
+  size: 49, 93
+  orig: 49, 93
+  offset: 0, 0
+  index: -1

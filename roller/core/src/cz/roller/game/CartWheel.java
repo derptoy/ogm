@@ -9,14 +9,16 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.JointDef.JointType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
+
+import cz.roller.game.world.Settings;
 
 @SuppressWarnings("unused")
 public class CartWheel {
@@ -65,15 +67,15 @@ public class CartWheel {
 		wheelJoint.setMaxMotorTorque(1*speed);
 		
 		wheelSprite = new Sprite(new Texture(Gdx.files.internal("cart/wheel.png")));
-		wheelSprite.setSize(wheelSize, wheelSize);
-		wheelSprite.setOrigin(wheelSize/2, wheelSize/2);
+		wheelSprite.setSize(wheelSize*Settings.TO_PIXELS, wheelSize*Settings.TO_PIXELS);
+		wheelSprite.setOrigin(wheelSprite.getWidth()/2, wheelSprite.getHeight()/2);
 		
 		wheelSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 	}
 
 	public void draw(SpriteBatch batch) {
-		wheelSprite.setPosition(	wheel.getPosition().x-wheelSprite.getWidth()/2, 
-									wheel.getPosition().y-wheelSprite.getHeight()/2);
+		wheelSprite.setPosition(	Settings.TO_PIXELS * wheel.getPosition().x-wheelSprite.getWidth()/2, 
+									Settings.TO_PIXELS * wheel.getPosition().y-wheelSprite.getHeight()/2);
 		wheelSprite.setRotation((float)(wheel.getAngle()*MathUtils.radiansToDegrees));
 		
 		wheelSprite.draw(batch);

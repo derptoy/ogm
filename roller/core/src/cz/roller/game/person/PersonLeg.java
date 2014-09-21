@@ -47,19 +47,20 @@ public class PersonLeg {
 	
 	private void createTextures(String url) {
 		legSprite = new Sprite(new Texture(Gdx.files.internal(url)));
-		legSprite.setSize(legWidth, legLength);
-		legSprite.setOrigin(legWidth/2, legLength/2);
+		legSprite.setSize(Settings.TO_PIXELS*legWidth, Settings.TO_PIXELS*legLength);
+		legSprite.setOrigin(Settings.TO_PIXELS*legWidth/2, Settings.TO_PIXELS*legLength/2);
 		legSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		leg2Sprite = new Sprite(new Texture(Gdx.files.internal(url)));
-		leg2Sprite.setSize(legWidth, legLength);
-		leg2Sprite.setOrigin(legWidth/2, legLength/2);
+		leg2Sprite.setSize(Settings.TO_PIXELS*legWidth, Settings.TO_PIXELS*legLength);
+		leg2Sprite.setOrigin(Settings.TO_PIXELS*legWidth/2, Settings.TO_PIXELS*legLength/2);
 		leg2Sprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 	}
 
 	private void createLegs(World world, Body body, short category) {
 		BodyDef bodyDefLeg = new BodyDef();
 		bodyDefLeg.type = BodyType.DynamicBody;
+		bodyDefLeg.position.set(body.getPosition());
 		Body bodyLeg = world.createBody(bodyDefLeg);
 		
 		PolygonShape shapeLeg = new PolygonShape();
@@ -91,6 +92,7 @@ public class PersonLeg {
 		// Leg2
 		BodyDef bodyDefLeg2 = new BodyDef();
 		bodyDefLeg2.type = BodyType.DynamicBody;
+		bodyDefLeg2.position.set(body.getPosition());
 		Body bodyLeg2 = world.createBody(bodyDefLeg2);
 		
 		PolygonShape shapeLeg2 = new PolygonShape();
@@ -121,11 +123,11 @@ public class PersonLeg {
 	}
 	
 	public void draw(SpriteBatch batch) {
-		legSprite.setPosition(	leg1.getBody().getPosition().x-legSprite.getWidth()/2, 
-								leg1.getBody().getPosition().y-legSprite.getHeight()/2);
+		legSprite.setPosition(	Settings.TO_PIXELS*leg1.getBody().getPosition().x-legSprite.getWidth()/2, 
+								Settings.TO_PIXELS*leg1.getBody().getPosition().y-legSprite.getHeight()/2);
 		legSprite.setRotation((float)(leg1.getBody().getAngle()*MathUtils.radiansToDegrees));
-		leg2Sprite.setPosition(	leg2.getBody().getPosition().x-leg2Sprite.getWidth()/2, 
-								leg2.getBody().getPosition().y-leg2Sprite.getHeight()/2);
+		leg2Sprite.setPosition(	Settings.TO_PIXELS*leg2.getBody().getPosition().x-leg2Sprite.getWidth()/2, 
+								Settings.TO_PIXELS*leg2.getBody().getPosition().y-leg2Sprite.getHeight()/2);
 		leg2Sprite.setRotation((float)(leg2.getBody().getAngle()*MathUtils.radiansToDegrees));
 	
 	

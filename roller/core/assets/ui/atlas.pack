@@ -54,3 +54,17 @@ default.selection
   orig: 1, 1
   offset: 0, 0
   index: -1
+select.up
+  rotate: false
+  xy: 0, 42
+  size: 105, 64
+  orig: 105, 64
+  offset: 0, 0
+  index: -1
+select.down
+  rotate: false
+  xy: 0, 106
+  size: 105, 64
+  orig: 105, 64
+  offset: 0, 0
+  index: -1

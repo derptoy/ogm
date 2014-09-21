@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -53,6 +54,7 @@ public class Person {
 		headSize = 0.6f * size;
 		
 		Body body = world.createBody(bodyDef);
+		body.getPosition().set(x, y);
 		
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(torsoWidth/2, torsoLength/2);
@@ -71,39 +73,10 @@ public class Person {
 		legFront = new PersonLeg(size, world, body, Settings.CATEGORY_RIGHT_SIDE, "person/leg.png");
 		legBack = new PersonLeg(size, world, body, Settings.CATEGORY_LEFT_SIDE, "person/legback.png");
 		
-		// Neck
-//		BodyDef bodyDefNeck = new BodyDef();
-//		bodyDefNeck.type = BodyType.DynamicBody;
-//
-//		Body bodyNeck = world.createBody(bodyDefNeck);
-//
-//		PolygonShape shapeNeck = new PolygonShape();
-//		shapeNeck.setAsBox(0.05f, 0.1f);
-//
-//		FixtureDef fixtureDefNeck = new FixtureDef();
-//		fixtureDefNeck.shape = shapeLeg;
-//		fixtureDefNeck.density = 0.5f; 
-//		fixtureDefNeck.friction = 0.0f;
-//		fixtureDefNeck.restitution = 0.1f;
-//
-//		neck = bodyNeck.createFixture(fixtureDefNeck);
-//
-//		RevoluteJointDef neckJointDef = new RevoluteJointDef();
-//		neckJointDef.bodyA = body;
-//		neckJointDef.bodyB = bodyNeck;
-//		neckJointDef.type = JointType.RevoluteJoint;
-//		neckJointDef.localAnchorA.set(0, 0.5f);
-//		neckJointDef.lowerAngle = 0.0f;
-//		neckJointDef.upperAngle = 0.0f;
-//		neckJointDef.collideConnected = false;
-//		neckJointDef.localAnchorB.set(0, -0.1f);
-//		neckJoint = (RevoluteJoint)world.createJoint(neckJointDef);
-//
-//		shapeNeck.dispose();
-		
 		// Head
 		BodyDef headDef = new BodyDef();
 		headDef.type = BodyType.DynamicBody;
+		headDef.position.set(x, y);
 		Body headBody = world.createBody(headDef);
 
 		CircleShape circle = new CircleShape();
@@ -140,13 +113,13 @@ public class Person {
 	
 	private void loadTextures() {
 		headSprite = new Sprite(new Texture(Gdx.files.internal("person/head.png")));
-		headSprite.setSize(headSize, headSize);
-		headSprite.setOrigin(headSize/2, headSize/2);
+		headSprite.setSize(headSize*Settings.TO_PIXELS, headSize*Settings.TO_PIXELS);
+		headSprite.setOrigin(headSize*Settings.TO_PIXELS/2, headSize*Settings.TO_PIXELS/2);
 		headSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		torsoSprite = new Sprite(new Texture(Gdx.files.internal("person/body.png")));
-		torsoSprite.setSize(torsoWidth, torsoLength);
-		torsoSprite.setOrigin(torsoWidth/2, torsoLength/2);
+		torsoSprite.setSize(torsoWidth*Settings.TO_PIXELS, torsoLength*Settings.TO_PIXELS);
+		torsoSprite.setOrigin(torsoWidth*Settings.TO_PIXELS/2, torsoLength*Settings.TO_PIXELS/2);
 		torsoSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 	}
 
@@ -154,13 +127,13 @@ public class Person {
 		armBack.draw(batch);
 		legBack.draw(batch);
 		
-		torsoSprite.setPosition(	torso.getBody().getPosition().x-torsoSprite.getWidth()/2, 
-									torso.getBody().getPosition().y-torsoSprite.getHeight()/2);
+		torsoSprite.setPosition(	Settings.TO_PIXELS*torso.getBody().getPosition().x-torsoSprite.getWidth()/2, 
+									Settings.TO_PIXELS*torso.getBody().getPosition().y-torsoSprite.getHeight()/2);
 		torsoSprite.setRotation((float)(torso.getBody().getAngle()*MathUtils.radiansToDegrees));
 		torsoSprite.draw(batch);
 		
-		headSprite.setPosition(	head.getBody().getPosition().x-headSprite.getWidth()/2, 
-								head.getBody().getPosition().y-headSprite.getHeight()/2);
+		headSprite.setPosition(	Settings.TO_PIXELS*head.getBody().getPosition().x-headSprite.getWidth()/2, 
+								Settings.TO_PIXELS*head.getBody().getPosition().y-headSprite.getHeight()/2);
 		headSprite.setRotation((float)(head.getBody().getAngle()*MathUtils.radiansToDegrees));
 		headSprite.draw(batch);
 
@@ -180,6 +153,10 @@ public class Person {
 
 	public void testLimb() {
 		legFront.loseLimb();
+	}
+
+	public Vector2 getPosition() {
+		return torso.getBody().getPosition().cpy().scl(Settings.TO_PIXELS);
 	}
 
 

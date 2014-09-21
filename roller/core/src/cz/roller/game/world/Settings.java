@@ -7,4 +7,6 @@ public class Settings {
 	public final static short CATEGORY_RIGHT_SIDE = 0x0004; // 0000000000000010 in binary
 	public final static short CATEGORY_LEFT_SIDE = 0x0008;
 	
+	public final static int TO_PIXELS = 25;
+	
 }
