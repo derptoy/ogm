@@ -68,8 +68,8 @@ public class PersonArm {
 		FixtureDef fixtureDefArm = new FixtureDef();
 		fixtureDefArm.shape = shapeArm;
 		fixtureDefArm.density = 2; 
-		fixtureDefArm.friction = 0.0f;
-		fixtureDefArm.restitution = 0.1f;
+		fixtureDefArm.friction = PersonPhysics.FRICTION;
+		fixtureDefArm.restitution = PersonPhysics.RESTITUTION;
 		fixtureDefArm.filter.categoryBits = category;
 		fixtureDefArm.filter.maskBits = (short) (category | Settings.CATEGORY_WORLD);
 
@@ -101,8 +101,8 @@ public class PersonArm {
 		FixtureDef fixtureDefArm2 = new FixtureDef();
 		fixtureDefArm2.shape = shapeArm2;
 		fixtureDefArm2.density = 2; 
-		fixtureDefArm2.friction = 0.0f;
-		fixtureDefArm2.restitution = 0.1f;
+		fixtureDefArm2.friction = PersonPhysics.FRICTION;
+		fixtureDefArm2.restitution = PersonPhysics.RESTITUTION;
 		fixtureDefArm2.filter.categoryBits = category;
 		fixtureDefArm2.filter.maskBits = (short) (category | Settings.CATEGORY_WORLD);
 

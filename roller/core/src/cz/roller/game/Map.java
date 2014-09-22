@@ -36,6 +36,7 @@ public class Map {
 	private Body groundBody;
 	private World world;
 	private float[] spriteVertices;
+	private Fixture track;
 	
 	public Map(World world) {
 		this.world = world;
@@ -145,7 +146,7 @@ public class Map {
 			lastVec3 = kolm;
 			groundBox.set(vertices);
 			// Create a fixture from our polygon shape and add it to our ground body  
-			groundBody.createFixture(groundBox, 0.0f); 
+			track = groundBody.createFixture(groundBox, 0.0f); 
 			// Clean up after ourselves
 			groundBox.dispose();
 		}
@@ -255,6 +256,10 @@ public class Map {
 
 	public void dispose() {
 		trackTexture.dispose();
+	}
+
+	public Body getTrack() {
+		return track.getBody();
 	}
 
 }

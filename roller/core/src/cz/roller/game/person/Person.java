@@ -11,8 +11,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.JointDef.JointType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -61,9 +65,9 @@ public class Person {
 
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = shape;
-		fixtureDef.density = 2; 
-		fixtureDef.friction = 0.0f;
-		fixtureDef.restitution = 0.1f;
+		fixtureDef.density = 5; 
+		fixtureDef.friction = PersonPhysics.FRICTION;
+		fixtureDef.restitution = PersonPhysics.RESTITUTION;
 		fixtureDef.filter.categoryBits = Settings.CATEGORY_CENTER;
 		fixtureDef.filter.maskBits = Settings.CATEGORY_CENTER | Settings.CATEGORY_WORLD;
 		torso = body.createFixture(fixtureDef);
@@ -84,9 +88,9 @@ public class Person {
 
 		FixtureDef fixtureHeadDef = new FixtureDef();
 		fixtureHeadDef.shape = circle;
-		fixtureHeadDef.density = 2; 
-		fixtureHeadDef.friction = 0.0f;
-		fixtureHeadDef.restitution = 0.1f; // Make it bounce a little bit
+		fixtureHeadDef.density = 1; 
+		fixtureHeadDef.friction = PersonPhysics.FRICTION;
+		fixtureHeadDef.restitution = PersonPhysics.RESTITUTION; // Make it bounce a little bit
 		fixtureHeadDef.filter.categoryBits = Settings.CATEGORY_CENTER;
 		fixtureHeadDef.filter.maskBits = Settings.CATEGORY_CENTER | Settings.CATEGORY_WORLD;
 

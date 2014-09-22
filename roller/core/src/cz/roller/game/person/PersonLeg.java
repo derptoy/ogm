@@ -69,8 +69,8 @@ public class PersonLeg {
 		FixtureDef fixtureDefLeg = new FixtureDef();
 		fixtureDefLeg.shape = shapeLeg;
 		fixtureDefLeg.density = 2; 
-		fixtureDefLeg.friction = 0.0f;
-		fixtureDefLeg.restitution = 0.1f;
+		fixtureDefLeg.friction = PersonPhysics.FRICTION;
+		fixtureDefLeg.restitution = PersonPhysics.RESTITUTION;
 		fixtureDefLeg.filter.categoryBits = category;
 		fixtureDefLeg.filter.maskBits = (short) (category | Settings.CATEGORY_WORLD);
 		leg1 = bodyLeg.createFixture(fixtureDefLeg);
@@ -101,8 +101,8 @@ public class PersonLeg {
 		FixtureDef fixtureDefLeg2 = new FixtureDef();
 		fixtureDefLeg2.shape = shapeLeg;
 		fixtureDefLeg2.density = 2f; 
-		fixtureDefLeg2.friction = 0.0f;
-		fixtureDefLeg2.restitution = 0.0f;
+		fixtureDefLeg2.friction = PersonPhysics.FRICTION;
+		fixtureDefLeg2.restitution = PersonPhysics.RESTITUTION;
 		fixtureDefLeg2.filter.categoryBits = category;
 		fixtureDefLeg2.filter.maskBits = (short) (category | Settings.CATEGORY_WORLD);
 		leg2 = bodyLeg2.createFixture(fixtureDefLeg2);

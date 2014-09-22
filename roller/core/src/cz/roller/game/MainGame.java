@@ -1,34 +1,26 @@
 package cz.roller.game;
 
-import java.util.LinkedList;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool.PooledEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.CatmullRomSpline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
@@ -36,7 +28,6 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.utils.Array;
 
 import cz.roller.game.person.Person;
-import cz.roller.game.track.SupportPole;
 import cz.roller.game.world.Settings;
 
 public class MainGame implements Screen,InputProcessor {
@@ -109,6 +100,50 @@ public class MainGame implements Screen,InputProcessor {
 		effects.add(effect);
 		
 		shapeRenderer = new ShapeRenderer();
+		
+		registerBloodListener();
+	}
+
+	private void registerBloodListener() {
+		world.setContactListener(new ContactListener() {
+			
+			@Override
+			public void preSolve(Contact contact, Manifold oldManifold) {
+				
+			}
+			
+			@Override
+			public void postSolve(Contact contact, ContactImpulse impulse) {
+			}
+			
+			@Override
+			public void endContact(Contact contact) {
+				
+			}
+			
+			@Override
+			public void beginContact(Contact contact) {
+				Body cBody = null;
+				
+				if(contact.getFixtureA().getBody().equals(map.getTrack()))
+					cBody = contact.getFixtureB().getBody();
+				else if(contact.getFixtureB().getBody().equals(map.getTrack()))	
+					cBody = contact.getFixtureA().getBody();
+				
+				if(cBody != null) {
+					Vector2 vec = contact.getWorldManifold().getPoints()[0];
+			        
+					PooledEffect effect = bombEffectPool.obtain();
+					effect.scaleEffect(0.1f);
+					effect.reset();
+					effect.start();
+					effect.setPosition(vec.x*Settings.TO_PIXELS, vec.y*Settings.TO_PIXELS);
+					effects.add(effect);
+					System.out.println("Blood");
+				}
+				
+			}
+		});
 	}
 
 	private void createRagdoll() {
@@ -206,14 +241,14 @@ public class MainGame implements Screen,InputProcessor {
 		        effect.free();
 		        effects.removeIndex(i);
 		    	
-		        Vector2 vec = person.getPosition();
-		        
-		    	effect = bombEffectPool.obtain();
-		    	effect.reset();
-		    	effect.start();
-				effect.setPosition(vec.x, vec.y);
-				effects.add(effect);
-				System.out.println("Blood");
+//		        Vector2 vec = person.getPosition();
+//		        
+//		    	effect = bombEffectPool.obtain();
+//		    	effect.reset();
+//		    	effect.start();
+//				effect.setPosition(vec.x, vec.y);
+//				effects.add(effect);
+//				System.out.println("Blood");
 		    }
 		}
 		batch.end();
