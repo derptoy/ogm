@@ -44,7 +44,7 @@ public class CartWheel {
 		FixtureDef fixtureDef1 = new FixtureDef();
 		fixtureDef1.shape = circle1;
 		fixtureDef1.density =		15f; 
-		fixtureDef1.friction = 		20f;
+		fixtureDef1.friction = 		200f;
 		fixtureDef1.restitution = 	0.1f; // Make it bounce a little bit
 		fixtureWheel = wheel.createFixture(fixtureDef1);
 		
@@ -58,8 +58,8 @@ public class CartWheel {
 		wheelJoint1Def.localAnchorA.set(offsetDir*(cartWidth/2 - wheelSize/2), - cartHeight/2);
 		wheelJoint1Def.localAnchorB.set(0, 0.0f);
 		wheelJoint1Def.enableMotor = false;
-		wheelJoint1Def.frequencyHz	=	80;
-		wheelJoint1Def.dampingRatio = 	1.0f;
+		wheelJoint1Def.frequencyHz	=	50;
+		wheelJoint1Def.dampingRatio = 	0.1f;
 		wheelJoint1Def.localAxisA.set(Vector2.Y);
 		wheelJoint = (WheelJoint)world.createJoint(wheelJoint1Def);
 		

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -36,6 +37,7 @@ public class MainGame implements Screen,InputProcessor {
 	private Box2DDebugRenderer debugRenderer;
 	private OrthographicCamera camera;
 	private Cart cart;
+	private Cart cart2;
 	private boolean debugRender = true;
 	private ShapeRenderer shapeRenderer;
 	private Person person;
@@ -73,7 +75,12 @@ public class MainGame implements Screen,InputProcessor {
 		debugRenderer = new Box2DDebugRenderer();
 		
 //		createBodies();
+		// *************************** CART
 		cart = new Cart(8,15, world);
+		cart2 = new Cart(5,15, world);
+		cart2.setTint(new Color(0.5f,0.5f,0.5f,1));
+		cart.connect(cart2, world);
+		
 		Gdx.input.setInputProcessor(this);
 		
 		map = new Map(world);
@@ -196,6 +203,7 @@ public class MainGame implements Screen,InputProcessor {
 		stage.act();
 		stage.draw();
 		
+		cart2.render(batch);
 		cart.render(batch);
 		
 		if(debugRender)
@@ -264,8 +272,10 @@ public class MainGame implements Screen,InputProcessor {
 	public boolean keyDown(int keycode) {
 		if(Keys.A == keycode) {
 			cart.impuls(1);
+			cart2.impuls(1);
 		} else if(Keys.D == keycode) {
 			cart.impuls(-1);
+			cart2.impuls(-1);
 		} else if(Keys.SPACE == keycode) {
 		} else if(Keys.K == keycode) {
 			debugRender = !debugRender;
@@ -284,6 +294,7 @@ public class MainGame implements Screen,InputProcessor {
 	@Override
 	public boolean keyUp(int keycode) {
 		cart.impuls(0);
+		cart2.impuls(0);
 		return false;
 	}
 

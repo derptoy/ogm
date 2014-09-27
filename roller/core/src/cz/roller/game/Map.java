@@ -40,6 +40,7 @@ public class Map {
 	
 	public Map(World world) {
 		this.world = world;
+		prepareDataSet();
 		createPhysics();
 		createMap();
 	}
@@ -181,17 +182,29 @@ public class Map {
 		// BodyDef and FixtureDef don't need disposing, but shapes do.
 		circle.dispose();
 	}
+	
+	private void prepareDataSet() {
+//		float[] data = new float[]{
+//				-10,10,
+//				0,10,
+//				10,5,
+//				15,9,
+//				30,13,
+//				100,13};
+		float[] data = new float[]{
+				-10,10,
+				0,10,
+				30,10,
+				100,10};
+		dataSet = new Vector2[data.length/2];
+		for(int i=0;i<dataSet.length;i++) {
+			dataSet[i] = new Vector2(data[2*i], data[2*i+1]);
+		}
+	}
 
 	private void createSplines() {
 		float k = 40; //increase k for more fidelity to the spline
 		points = new Vector2[(int)k];
-		dataSet = new Vector2[6];
-		dataSet[0] = new Vector2(-10,10);
-		dataSet[1] = new Vector2(0,10);
-		dataSet[2] = new Vector2(10,5);
-		dataSet[3] = new Vector2(15,9);
-		dataSet[4] = new Vector2(30,13);
-		dataSet[5] = new Vector2(100,13);
 		/*init()*/
 		CatmullRomSpline<Vector2> myCatmull = new CatmullRomSpline<Vector2>(dataSet, false);
 		Vector2 out = new Vector2();
