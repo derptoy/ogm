@@ -1,7 +1,5 @@
 package cz.roller.game.person;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,18 +9,17 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.JointDef.JointType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
+import cz.roller.game.util.AssetManager;
 import cz.roller.game.world.Settings;
 
 @SuppressWarnings("unused")
@@ -74,13 +71,13 @@ public class Person {
 		
 		shape.dispose();
 		
-		legFront = new PersonLeg(size, world, body, Settings.CATEGORY_RIGHT_SIDE, "person/leg.png");
-		legBack = new PersonLeg(size, world, body, Settings.CATEGORY_LEFT_SIDE, "person/legback.png");
+		legFront = new PersonLeg(size, world, body, Settings.CATEGORY_RIGHT_SIDE, AssetManager.getTexture("person/leg.png"));
+		legBack = new PersonLeg(size, world, body, Settings.CATEGORY_LEFT_SIDE, AssetManager.getTexture("person/legback.png"));
 		
 		// Head
 		BodyDef headDef = new BodyDef();
 		headDef.type = BodyType.DynamicBody;
-		headDef.position.set(x, y);
+		headDef.position.set(x, y+0.6f * torsoLength + 0.5f*headSize);
 		Body headBody = world.createBody(headDef);
 
 		CircleShape circle = new CircleShape();
@@ -91,17 +88,21 @@ public class Person {
 		fixtureHeadDef.density = 1; 
 		fixtureHeadDef.friction = PersonPhysics.FRICTION;
 		fixtureHeadDef.restitution = PersonPhysics.RESTITUTION; // Make it bounce a little bit
-		fixtureHeadDef.filter.categoryBits = Settings.CATEGORY_CENTER;
+		fixtureHeadDef.filter.categoryBits = Settings.CATEGORY_WORLD;
 		fixtureHeadDef.filter.maskBits = Settings.CATEGORY_CENTER | Settings.CATEGORY_WORLD;
 
 		head = headBody.createFixture(fixtureHeadDef);
+//		headBody.setFixedRotation(true);
 		
 		RevoluteJointDef headJointDef = new RevoluteJointDef();
 		headJointDef.bodyA = body;
 		headJointDef.bodyB = headBody;
 		headJointDef.type = JointType.RevoluteJoint;
+//		headJointDef.length = 0.1f * torsoLength + 0.5f * headSize;
+//		headJointDef.localAnchorA.set(0, 0.6f * torsoLength);
+//		headJointDef.localAnchorB.set(0, 0.5f * headSize);
 		headJointDef.localAnchorA.set(0, 0.6f * torsoLength);
-		headJointDef.localAnchorB.set(0, 0.5f * headSize);
+		headJointDef.localAnchorB.set(0, -0.5f* headSize);
 //		headJointDef.lowerAngle = 0.0f;
 //		headJointDef.upperAngle = 0.0f;
 		headJointDef.collideConnected = true;
@@ -109,19 +110,19 @@ public class Person {
 
 		circle.dispose();
 		
-		armFront = new PersonArm(size, world, body, Settings.CATEGORY_RIGHT_SIDE, "person/arm.png");
-		armBack = new PersonArm(size, world, body, Settings.CATEGORY_LEFT_SIDE, "person/armback.png");
+		armFront = new PersonArm(size, world, body, Settings.CATEGORY_RIGHT_SIDE, AssetManager.getTexture("person/arm.png"));
+		armBack = new PersonArm(size, world, body, Settings.CATEGORY_LEFT_SIDE, AssetManager.getTexture("person/armback.png"));
 		
 		loadTextures();
 	}
 	
 	private void loadTextures() {
-		headSprite = new Sprite(new Texture(Gdx.files.internal("person/head.png")));
+		headSprite = new Sprite(AssetManager.getTexture("person/head.png"));
 		headSprite.setSize(headSize*Settings.TO_PIXELS, headSize*Settings.TO_PIXELS);
 		headSprite.setOrigin(headSize*Settings.TO_PIXELS/2, headSize*Settings.TO_PIXELS/2);
 		headSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		torsoSprite = new Sprite(new Texture(Gdx.files.internal("person/body.png")));
+		torsoSprite = new Sprite(AssetManager.getTexture("person/body.png"));
 		torsoSprite.setSize(torsoWidth*Settings.TO_PIXELS, torsoLength*Settings.TO_PIXELS);
 		torsoSprite.setOrigin(torsoWidth*Settings.TO_PIXELS/2, torsoLength*Settings.TO_PIXELS/2);
 		torsoSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);

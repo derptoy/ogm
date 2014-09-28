@@ -14,6 +14,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.JointDef.JointType;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
@@ -25,6 +27,7 @@ public class PersonArm {
 	private float armLength = 0.8f;
 	private float armHeight = 0.24f;
 	private float torsoLength = 1.0f;
+	private float torsoWidth = 0.5f;
 	
 	private Fixture arm;
 	private Fixture arm2;
@@ -34,22 +37,22 @@ public class PersonArm {
 	private Sprite armSprite;
 	private Sprite arm2Sprite;
 
-	public PersonArm(float size, World world, Body body, short category, String url) {
+	public PersonArm(float size, World world, Body body, short category, Texture texture) {
 		torsoLength = size;
 		armHeight = 0.24f * size;
 		armLength = 0.8f * size;
 		
 		createArms(world, body, category);
-		createTextures(url);
+		createTextures(texture);
 	}
 	
-	private void createTextures(String url) {
-		armSprite = new Sprite(new Texture(Gdx.files.internal(url)));
+	private void createTextures(Texture texture) {
+		armSprite = new Sprite(texture);
 		armSprite.setSize(Settings.TO_PIXELS*armLength, Settings.TO_PIXELS*armHeight);
 		armSprite.setOrigin(Settings.TO_PIXELS*armLength/2, Settings.TO_PIXELS*armHeight/2);
 		armSprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		arm2Sprite = new Sprite(new Texture(Gdx.files.internal(url)));
+		arm2Sprite = new Sprite(texture);
 		arm2Sprite.setSize(Settings.TO_PIXELS*armLength, Settings.TO_PIXELS*armHeight);
 		arm2Sprite.setOrigin(Settings.TO_PIXELS*armLength/2, Settings.TO_PIXELS*armHeight/2);
 		arm2Sprite.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -59,7 +62,7 @@ public class PersonArm {
 		// Arm
 		BodyDef armBodyDef = new BodyDef();
 		armBodyDef.type = BodyType.DynamicBody;
-		armBodyDef.position.set(body.getPosition());
+		armBodyDef.position.set(body.getPosition().x+0.5f*armLength, body.getPosition().y+0.4f*torsoLength);
 		Body bodyArm = world.createBody(armBodyDef);
 		
 		PolygonShape shapeArm = new PolygonShape();
@@ -71,28 +74,31 @@ public class PersonArm {
 		fixtureDefArm.friction = PersonPhysics.FRICTION;
 		fixtureDefArm.restitution = PersonPhysics.RESTITUTION;
 		fixtureDefArm.filter.categoryBits = category;
-		fixtureDefArm.filter.maskBits = (short) (category | Settings.CATEGORY_WORLD);
+		fixtureDefArm.filter.maskBits = (short) (Settings.CATEGORY_WORLD);
 
 		arm = bodyArm.createFixture(fixtureDefArm);
 		
 		RevoluteJointDef armJointDef = new RevoluteJointDef();
+//		DistanceJointDef armJointDef = new DistanceJointDef();
 		armJointDef.bodyA = body;
 		armJointDef.bodyB = bodyArm;
+//		armJointDef.type = JointType.DistanceJoint;
 		armJointDef.type = JointType.RevoluteJoint;
 		armJointDef.collideConnected = false;
-		armJointDef.localAnchorA.set(0, 0.8f*torsoLength/2);
-		armJointDef.localAnchorB.set(armLength/2, 0);
-//		armJointDef.lowerAngle = -90 * MathUtils.degreesToRadians;
-//		armJointDef.upperAngle = 90 * MathUtils.degreesToRadians;
+//		armJointDef.length=0.1f;
+		armJointDef.localAnchorA.set(0, 0.4f*torsoLength);
+		armJointDef.localAnchorB.set(-armLength/2, 0);
+		armJointDef.lowerAngle = -170 * MathUtils.degreesToRadians;
+		armJointDef.upperAngle = 110 * MathUtils.degreesToRadians;
 		armJoint = (RevoluteJoint)world.createJoint(armJointDef);
-//		armJoint.enableLimit(true);
+		armJoint.enableLimit(true);
 		
 		shapeArm.dispose();
 		
 		// Arm 2
 		BodyDef armBodyDef2 = new BodyDef();
 		armBodyDef2.type = BodyType.DynamicBody;
-		armBodyDef2.position.set(body.getPosition());
+		armBodyDef2.position.set(body.getPosition().x+1.5f*armLength,body.getPosition().y+0.4f*torsoLength);
 		Body bodyArm2 = world.createBody(armBodyDef2);
 
 		PolygonShape shapeArm2 = new PolygonShape();
@@ -104,7 +110,7 @@ public class PersonArm {
 		fixtureDefArm2.friction = PersonPhysics.FRICTION;
 		fixtureDefArm2.restitution = PersonPhysics.RESTITUTION;
 		fixtureDefArm2.filter.categoryBits = category;
-		fixtureDefArm2.filter.maskBits = (short) (category | Settings.CATEGORY_WORLD);
+		fixtureDefArm2.filter.maskBits = (short) (Settings.CATEGORY_WORLD);
 
 		arm2 = bodyArm2.createFixture(fixtureDefArm2);
 
@@ -113,12 +119,12 @@ public class PersonArm {
 		armJointDef2.bodyB = bodyArm2;
 		armJointDef2.type = JointType.RevoluteJoint;
 		armJointDef2.collideConnected = false;
-		armJointDef2.localAnchorA.set(-armLength/2, 0);
-		armJointDef2.localAnchorB.set(armLength/2, 0);
-//		armJointDef2.lowerAngle = -90 * MathUtils.degreesToRadians;
-//		armJointDef2.upperAngle = 90 * MathUtils.degreesToRadians;
+		armJointDef2.localAnchorA.set(armLength/2, 0);
+		armJointDef2.localAnchorB.set(-armLength/2, 0);
+		armJointDef2.lowerAngle = -10 * MathUtils.degreesToRadians;
+		armJointDef2.upperAngle = 140 * MathUtils.degreesToRadians;
 		armJoint2 = (RevoluteJoint)world.createJoint(armJointDef2);
-//		armJoint2.enableLimit(true);
+		armJoint2.enableLimit(true);
 
 		shapeArm2.dispose();
 	}

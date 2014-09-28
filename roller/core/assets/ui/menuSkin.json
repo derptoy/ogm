@@ -17,7 +17,8 @@
 		red32: { file: font/red32.fnt },
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
-		default: { font: white32, fontColor: white },
+		default: { font: black32, fontColor: black },
+		red:	 { font: red32, fontColor :red},
 		big:     { font: white64, fontColor: white },
 		small:   { font: white16, fontColor: white }
 	},
@@ -37,6 +38,9 @@
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		default: { font: white32, checkboxOn: checkbox.on, checkboxOff: checkbox.off, checkboxOver: checkbox.over }
+	},
+	com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+		default: { titleFont: black32, titleFontColor: gray, background: button.down}
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		default: { font: black32, fontColor: black, messageFontColor: gray, background: default.background, cursor: default.selection }

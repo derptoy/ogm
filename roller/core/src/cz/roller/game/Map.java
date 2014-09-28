@@ -2,7 +2,6 @@ package cz.roller.game;
 
 import java.util.LinkedList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -12,15 +11,14 @@ import com.badlogic.gdx.math.CatmullRomSpline;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 import cz.roller.game.track.SupportPole;
+import cz.roller.game.util.AssetManager;
 import cz.roller.game.world.Settings;
+import cz.roller.game.world.Type;
 
 public class Map {
 	
@@ -32,7 +30,6 @@ public class Map {
 	
 	private Vector2[] points;
 	private Vector2[] dataSet;
-	private CatmullRomSpline spline;
 	private Body groundBody;
 	private World world;
 	private float[] spriteVertices;
@@ -46,13 +43,13 @@ public class Map {
 	}
 
 	private void createMap() {
-		trackTexture = new Texture(Gdx.files.internal("track/track.png"));
+		trackTexture = AssetManager.getTexture("track/track.png");
 		trackTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		trackTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-		trackSupportTexture = new Texture(Gdx.files.internal("track/track.png"));
-		trackSupportTexture = new Texture(Gdx.files.internal("track/support.png"));
-		trackSupportPoleTexture = new Texture(Gdx.files.internal("track/supportPole.png"));
-		trackSupportPoleBase = new Texture(Gdx.files.internal("track/supportBase.png"));
+		trackSupportTexture = AssetManager.getTexture("track/track.png");
+		trackSupportTexture = AssetManager.getTexture("track/support.png");
+		trackSupportPoleTexture = AssetManager.getTexture("track/supportPole.png");
+		trackSupportPoleBase = AssetManager.getTexture("track/supportBase.png");
 		trackSupportPoleBase.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		createSupports();
@@ -147,41 +144,42 @@ public class Map {
 			lastVec3 = kolm;
 			groundBox.set(vertices);
 			// Create a fixture from our polygon shape and add it to our ground body  
-			track = groundBody.createFixture(groundBox, 0.0f); 
+			track = groundBody.createFixture(groundBox, 0.0f);
+			track.setUserData(Type.TRACK);
 			// Clean up after ourselves
 			groundBox.dispose();
 		}
 	}
 
-	private void createBodies() {
-		// First we create a body definition
-		BodyDef bodyDef = new BodyDef();
-		// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
-		bodyDef.type = BodyType.DynamicBody;
-		// Set our body's starting position in the world
-		bodyDef.position.set(5, 10);
-
-		// Create our body in the world using our body definition
-		Body body = world.createBody(bodyDef);
-
-		// Create a circle shape and set its radius to 6
-		CircleShape circle = new CircleShape();
-		circle.setRadius(1f);
-
-		// Create a fixture definition to apply our shape to
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = circle;
-		fixtureDef.density = 0.5f; 
-		fixtureDef.friction = 0.4f;
-		fixtureDef.restitution = 0.6f; // Make it bounce a little bit
-
-		// Create our fixture and attach it to the body
-		Fixture fixture = body.createFixture(fixtureDef);
-
-		// Remember to dispose of any shapes after you're done with them!
-		// BodyDef and FixtureDef don't need disposing, but shapes do.
-		circle.dispose();
-	}
+//	private void createBodies() {
+//		// First we create a body definition
+//		BodyDef bodyDef = new BodyDef();
+//		// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
+//		bodyDef.type = BodyType.DynamicBody;
+//		// Set our body's starting position in the world
+//		bodyDef.position.set(5, 10);
+//
+//		// Create our body in the world using our body definition
+//		Body body = world.createBody(bodyDef);
+//
+//		// Create a circle shape and set its radius to 6
+//		CircleShape circle = new CircleShape();
+//		circle.setRadius(1f);
+//
+//		// Create a fixture definition to apply our shape to
+//		FixtureDef fixtureDef = new FixtureDef();
+//		fixtureDef.shape = circle;
+//		fixtureDef.density = 0.5f; 
+//		fixtureDef.friction = 0.4f;
+//		fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+//
+//		// Create our fixture and attach it to the body
+//		Fixture fixture = body.createFixture(fixtureDef);
+//
+//		// Remember to dispose of any shapes after you're done with them!
+//		// BodyDef and FixtureDef don't need disposing, but shapes do.
+//		circle.dispose();
+//	}
 	
 	private void prepareDataSet() {
 //		float[] data = new float[]{
@@ -207,8 +205,8 @@ public class Map {
 		points = new Vector2[(int)k];
 		/*init()*/
 		CatmullRomSpline<Vector2> myCatmull = new CatmullRomSpline<Vector2>(dataSet, false);
-		Vector2 out = new Vector2();
-		float step = 1/(float)k;
+//		Vector2 out = new Vector2();
+//		float step = 1/(float)k;
 		for(int i = 0; i < k; ++i) {
 			points[i] = new Vector2();
 			myCatmull.valueAt(points[i], i/k);
