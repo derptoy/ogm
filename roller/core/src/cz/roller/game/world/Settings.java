@@ -6,7 +6,9 @@ public class Settings {
 	public final static short CATEGORY_CENTER = 0x0002;  // 0000000000000001 in binary
 	public final static short CATEGORY_RIGHT_SIDE = 0x0004; // 0000000000000010 in binary
 	public final static short CATEGORY_LEFT_SIDE = 0x0008;
+	public final static short CATEGORY_END_OF_LEVEL = 0x0010;
 	
 	public final static int TO_PIXELS = 25;
+	
 	
 }

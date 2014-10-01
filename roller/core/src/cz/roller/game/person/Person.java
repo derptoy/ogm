@@ -19,8 +19,10 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
+import cz.roller.game.BodyDamage;
 import cz.roller.game.util.AssetManager;
 import cz.roller.game.world.Settings;
+import cz.roller.game.world.Type;
 
 @SuppressWarnings("unused")
 public class Person {
@@ -55,6 +57,7 @@ public class Person {
 		headSize = 0.6f * size;
 		
 		Body body = world.createBody(bodyDef);
+		body.setUserData(new BodyDamage());
 		body.getPosition().set(x, y);
 		
 		PolygonShape shape = new PolygonShape();
@@ -79,6 +82,7 @@ public class Person {
 		headDef.type = BodyType.DynamicBody;
 		headDef.position.set(x, y+0.6f * torsoLength + 0.5f*headSize);
 		Body headBody = world.createBody(headDef);
+		headBody.setUserData(new BodyDamage());
 
 		CircleShape circle = new CircleShape();
 		circle.setRadius(headSize/2.0f);
@@ -92,6 +96,7 @@ public class Person {
 		fixtureHeadDef.filter.maskBits = Settings.CATEGORY_CENTER | Settings.CATEGORY_WORLD;
 
 		head = headBody.createFixture(fixtureHeadDef);
+		head.setUserData(Type.PERSON);
 //		headBody.setFixedRotation(true);
 		
 		RevoluteJointDef headJointDef = new RevoluteJointDef();

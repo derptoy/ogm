@@ -81,7 +81,7 @@ public class MainMenu implements Screen {
         stage.addActor(newGame);
         
         exit = new TextButton("Exit",skin);
-        exit.setPosition(stage.getWidth()/2 - exit.getWidth()/2, 0.4f*stage.getHeight() - exit.getHeight()/2);
+        exit.setPosition(stage.getWidth()/2 - exit.getWidth()/2, 0.35f*stage.getHeight() - exit.getHeight()/2);
 //        exit.setCenterPosition(stage.getWidth()+200, 0.4f*stage.getHeight());
 //        action = new MoveToAction();
 //		action.setPosition(stage.getWidth()/2 - exit.getWidth()/2, 0.4f*stage.getHeight() - exit.getHeight()/2);

@@ -1,0 +1,39 @@
+{
+    "levels": [
+        {
+            "name": "Level1",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 11.2,
+            "earnedStars": 0,
+            "trackSplines": 60,
+            "track": [
+                 -10,10,
+                0,10,
+                20,10,
+                45,2,
+                65,15,
+                80,20,
+                100,10,
+                150,10
+            ]
+        },
+        {
+            "name": "Level2",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 10.7,
+            "earnedStars": 3,
+            "trackSplines": 60,
+            "track": [
+                -10,10,
+                0,10,
+                50,10,
+                65,15,
+                75,10,
+                100,10,
+                150,10
+            ]
+        }
+    ]
+}

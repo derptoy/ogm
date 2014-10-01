@@ -19,7 +19,9 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
+import cz.roller.game.BodyDamage;
 import cz.roller.game.world.Settings;
+import cz.roller.game.world.Type;
 
 @SuppressWarnings("unused")
 public class PersonArm {
@@ -64,6 +66,7 @@ public class PersonArm {
 		armBodyDef.type = BodyType.DynamicBody;
 		armBodyDef.position.set(body.getPosition().x+0.5f*armLength, body.getPosition().y+0.4f*torsoLength);
 		Body bodyArm = world.createBody(armBodyDef);
+		bodyArm.setUserData(new BodyDamage());
 		
 		PolygonShape shapeArm = new PolygonShape();
 		shapeArm.setAsBox(armLength/2, armHeight/2);
@@ -77,6 +80,7 @@ public class PersonArm {
 		fixtureDefArm.filter.maskBits = (short) (Settings.CATEGORY_WORLD);
 
 		arm = bodyArm.createFixture(fixtureDefArm);
+		arm.setUserData(Type.PERSON);
 		
 		RevoluteJointDef armJointDef = new RevoluteJointDef();
 //		DistanceJointDef armJointDef = new DistanceJointDef();
@@ -100,6 +104,7 @@ public class PersonArm {
 		armBodyDef2.type = BodyType.DynamicBody;
 		armBodyDef2.position.set(body.getPosition().x+1.5f*armLength,body.getPosition().y+0.4f*torsoLength);
 		Body bodyArm2 = world.createBody(armBodyDef2);
+		bodyArm2.setUserData(new BodyDamage());
 
 		PolygonShape shapeArm2 = new PolygonShape();
 		shapeArm2.setAsBox(armLength/2, armHeight/2);
@@ -113,6 +118,7 @@ public class PersonArm {
 		fixtureDefArm2.filter.maskBits = (short) (Settings.CATEGORY_WORLD);
 
 		arm2 = bodyArm2.createFixture(fixtureDefArm2);
+		arm2.setUserData(Type.PERSON);
 
 		RevoluteJointDef armJointDef2 = new RevoluteJointDef();
 		armJointDef2.bodyA = bodyArm;

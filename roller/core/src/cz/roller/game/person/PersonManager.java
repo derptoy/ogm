@@ -26,4 +26,9 @@ public class PersonManager {
 			person.dispose();
 	}
 
+	public void looseLimb() {
+		for(Person person:persons)
+			person.testLimb();
+	}
+
 }

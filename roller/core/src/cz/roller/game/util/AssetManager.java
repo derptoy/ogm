@@ -18,9 +18,13 @@ public class AssetManager {
 		assets.load("person/armback.png", Texture.class);
 		
 		assets.load("track/track.png", Texture.class);
+		assets.load("track/flag.png", Texture.class);
 		assets.load("track/support.png", Texture.class);
 		assets.load("track/supportPole.png", Texture.class);
 		assets.load("track/supportBase.png", Texture.class);
+		
+		assets.load("result/star.png", Texture.class);
+		assets.load("result/starEarned.png", Texture.class);
 	}
 	
 	public static Texture getTexture(String string) {

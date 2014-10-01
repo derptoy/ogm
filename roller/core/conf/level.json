@@ -1,0 +1,135 @@
+{
+    "levels": [
+    	{
+            "name": "Level1",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 10.7,
+            "time":[8,10,15],
+            "earnedStars": 0,
+            "trackSplines": 80,
+            "trackWidth": 96,
+            "levelWidth": 2400,
+            "flagX":87.3,
+            "flagY":9.8,
+            "track": [
+                -10,10,
+                0,10,
+                50,10,
+                65,15,
+                75,10,
+                100,10,
+                150,10
+            ]
+        },
+        {
+            "name": "Level2",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 11.2,
+            "time":[10,15,20],
+            "earnedStars": 0,
+            "trackSplines": 120,
+            "trackWidth": 120,
+            "levelWidth": 3000,
+            "flagX":109.5,
+            "flagY":9.8,
+            "track": [
+                 -10,10,
+                0,10,
+                20,10,
+                45,2,
+                65,15,
+                80,20,
+                100,10,
+                111,10,
+                120,10,
+                130,10,
+                150,10
+            ]
+        },
+        {
+            "name": "Level3",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 11.0,
+            "time":[15,20,30],
+            "earnedStars": 0,
+            "trackSplines": 120,
+            "trackWidth": 120,
+            "levelWidth": 3000,
+            "flagX":109.5,
+            "flagY":9.8,
+            "track": [
+                 -10,10,
+                0,10,
+                20,10,
+                30,15,
+                40,10,
+                50,15,
+                60,10,
+                80,15,
+                100,10,
+                210,10,
+                300,10
+            ]
+        },
+        {
+            "name": "Level4",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 11.2,
+            "time":[15,20,30],
+            "earnedStars": 0,
+            "trackSplines": 120,
+            "trackWidth": 120,
+            "levelWidth": 3000,
+            "flagX":109.5,
+            "flagY":9.6,
+            "track": [
+                 -10,10,
+                0,10,
+                20,10,
+                45,2,
+                65,15,
+                80,20,
+                100,10,
+                210,10,
+                300,10
+            ]
+        },
+        {
+            "name": "Level5",
+            "icon": "menu/level1.png",
+            "startx": 10,
+            "starty": 10.9,
+            "time":[25,35,50],
+            "earnedStars": 0,
+            "trackSplines": 180,
+            "trackWidth": 192.5,
+            "levelWidth": 4800,
+            "flagX":182.4,
+            "flagY":9.75,
+            "track": [
+                 -10,10,
+                0,10,
+                20,10,
+                50,20,
+                80,5,
+                100,10,
+                103,9,
+                106,10,
+                130,10,
+                140,15,
+                150,5,
+                160,10,
+                165,9,
+                170,10,
+                180,10,
+                210,10,
+                300,10
+            ]
+        }
+       
+    ]
+}

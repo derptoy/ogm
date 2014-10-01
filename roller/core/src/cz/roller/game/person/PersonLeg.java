@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
+import cz.roller.game.BodyDamage;
 import cz.roller.game.world.Settings;
 import cz.roller.game.world.Type;
 
@@ -63,6 +64,7 @@ public class PersonLeg {
 		bodyDefLeg.type = BodyType.DynamicBody;
 		bodyDefLeg.position.set(body.getPosition().x+legLength/2, body.getPosition().y-0.9f*torsoLength/2);
 		Body bodyLeg = world.createBody(bodyDefLeg);
+		bodyLeg.setUserData(new BodyDamage());
 		
 		PolygonShape shapeLeg = new PolygonShape();
 		shapeLeg.setAsBox(legLength/2, legWidth/2);
@@ -84,8 +86,8 @@ public class PersonLeg {
 		legJointDef1.collideConnected = false;
 		legJointDef1.localAnchorA.set(0, -0.9f*torsoLength/2);
 		legJointDef1.localAnchorB.set(-legLength/2, 0);
-		legJointDef1.lowerAngle = -90 * MathUtils.degreesToRadians;
-		legJointDef1.upperAngle = 120 * MathUtils.degreesToRadians;
+		legJointDef1.lowerAngle = -190 * MathUtils.degreesToRadians;
+		legJointDef1.upperAngle = 20 * MathUtils.degreesToRadians;
 		legJoint1 = (RevoluteJoint)world.createJoint(legJointDef1);
 //		leg1.getBody().setTransform(leg1.getBody().getPosition(), 90 * MathUtils.degreesToRadians);
 		legJoint1.enableLimit(true);
@@ -97,6 +99,7 @@ public class PersonLeg {
 		bodyDefLeg2.type = BodyType.DynamicBody;
 		bodyDefLeg2.position.set(body.getPosition().x+legLength, body.getPosition().y-0.9f*torsoLength/2-legLength/2);
 		Body bodyLeg2 = world.createBody(bodyDefLeg2);
+		bodyLeg2.setUserData(new BodyDamage());
 		
 		PolygonShape shapeLeg2 = new PolygonShape();
 		shapeLeg2.setAsBox(legWidth/2, legLength/2);
@@ -118,8 +121,8 @@ public class PersonLeg {
 		legJointDef2.collideConnected = false;
 		legJointDef2.localAnchorA.set(legLength/2, 0);
 		legJointDef2.localAnchorB.set(0, legLength/2);
-		legJointDef2.lowerAngle = -170 * MathUtils.degreesToRadians;
-		legJointDef2.upperAngle = 10 * MathUtils.degreesToRadians;
+		legJointDef2.lowerAngle = -80 * MathUtils.degreesToRadians;
+		legJointDef2.upperAngle = 100 * MathUtils.degreesToRadians;
 		legJoint2 = (RevoluteJoint)world.createJoint(legJointDef2);
 //		leg2.getBody().setTransform(leg2.getBody().getPosition(), 90 * MathUtils.degreesToRadians);
 		legJoint2.enableLimit(true);
@@ -145,7 +148,10 @@ public class PersonLeg {
 	}
 
 	public void loseLimb() {
-		world.destroyJoint(legJoint2);
+		if(legJoint2 != null) {
+			world.destroyJoint(legJoint2);
+			legJoint2 = null;
+		}
 	}
 
 }

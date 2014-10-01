@@ -1,6 +1,7 @@
 package cz.roller.game;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,9 +13,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
+import cz.roller.game.level.Level;
 import cz.roller.game.track.SupportPole;
 import cz.roller.game.util.AssetManager;
 import cz.roller.game.world.Settings;
@@ -34,9 +37,14 @@ public class Map {
 	private World world;
 	private float[] spriteVertices;
 	private Fixture track;
+	private Level level;
+	@SuppressWarnings("unused")
+	private Fixture sensorFixture;
+	private Texture flagTexture;
 	
-	public Map(World world) {
+	public Map(World world, Level level) {
 		this.world = world;
+		this.level = level;
 		prepareDataSet();
 		createPhysics();
 		createMap();
@@ -46,6 +54,7 @@ public class Map {
 		trackTexture = AssetManager.getTexture("track/track.png");
 		trackTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		trackTexture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+		flagTexture = AssetManager.getTexture("track/flag.png");
 		trackSupportTexture = AssetManager.getTexture("track/track.png");
 		trackSupportTexture = AssetManager.getTexture("track/support.png");
 		trackSupportPoleTexture = AssetManager.getTexture("track/supportPole.png");
@@ -91,12 +100,22 @@ public class Map {
 		
 		groundBodyDef = new BodyDef();  
 		// Set its world position
-		groundBodyDef.position.set(new Vector2(97.5f,20 ));
+		groundBodyDef.position.set(new Vector2(level.getTrackWidth(),20 ));
 		groundBodyDef.angle=0.0f;
 
 		// Create a body from the defintion and add it to the world
 		groundBody = world.createBody(groundBodyDef);  
-
+		
+		PolygonShape endSensor = new PolygonShape();
+		endSensor.setAsBox(10, 40);
+		
+		FixtureDef sensorDef = new FixtureDef();
+		sensorDef.shape = endSensor;
+		sensorDef.isSensor = true;
+//		sensorDef.filter.maskBits = Settings.CATEGORY_END_OF_LEVEL;
+		sensorDef.filter.categoryBits = Settings.CATEGORY_END_OF_LEVEL;
+		sensorFixture = groundBody.createFixture(sensorDef);
+		
 		// Create a polygon shape
 		groundBox = new PolygonShape();  
 		// Set the polygon shape as a box which is twice the size of our view port and 20 high
@@ -151,69 +170,24 @@ public class Map {
 		}
 	}
 
-//	private void createBodies() {
-//		// First we create a body definition
-//		BodyDef bodyDef = new BodyDef();
-//		// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
-//		bodyDef.type = BodyType.DynamicBody;
-//		// Set our body's starting position in the world
-//		bodyDef.position.set(5, 10);
-//
-//		// Create our body in the world using our body definition
-//		Body body = world.createBody(bodyDef);
-//
-//		// Create a circle shape and set its radius to 6
-//		CircleShape circle = new CircleShape();
-//		circle.setRadius(1f);
-//
-//		// Create a fixture definition to apply our shape to
-//		FixtureDef fixtureDef = new FixtureDef();
-//		fixtureDef.shape = circle;
-//		fixtureDef.density = 0.5f; 
-//		fixtureDef.friction = 0.4f;
-//		fixtureDef.restitution = 0.6f; // Make it bounce a little bit
-//
-//		// Create our fixture and attach it to the body
-//		Fixture fixture = body.createFixture(fixtureDef);
-//
-//		// Remember to dispose of any shapes after you're done with them!
-//		// BodyDef and FixtureDef don't need disposing, but shapes do.
-//		circle.dispose();
-//	}
-	
 	private void prepareDataSet() {
-//		float[] data = new float[]{
-//				-10,10,
-//				0,10,
-//				10,5,
-//				15,9,
-//				30,13,
-//				100,13};
-		float[] data = new float[]{
-				-10,10,
-				0,10,
-				30,10,
-				100,10};
-		dataSet = new Vector2[data.length/2];
+		List<Float> data = level.getTrack();
+		dataSet = new Vector2[data.size()/2];
 		for(int i=0;i<dataSet.length;i++) {
-			dataSet[i] = new Vector2(data[2*i], data[2*i+1]);
+			dataSet[i] = new Vector2(data.get(2*i), data.get(2*i+1));
 		}
 	}
 
 	private void createSplines() {
-		float k = 40; //increase k for more fidelity to the spline
+		float k = level.getTrackSplines(); //increase k for more fidelity to the spline
 		points = new Vector2[(int)k];
-		/*init()*/
 		CatmullRomSpline<Vector2> myCatmull = new CatmullRomSpline<Vector2>(dataSet, false);
-//		Vector2 out = new Vector2();
-//		float step = 1/(float)k;
 		for(int i = 0; i < k; ++i) {
 			points[i] = new Vector2();
 			myCatmull.valueAt(points[i], i/k);
 		}
 		
 		int kk = (int)k;
-//		int kk = 4;
 		spriteVertices = new float[kk*5*4];
 		Vector2 p1,p2,kolm,previousKolm = null;
 		for(int i = 0; i < kk-1; ++i) {
@@ -226,25 +200,25 @@ public class Map {
 			spriteVertices[20*i]   = Settings.TO_PIXELS * p1.x;
 			spriteVertices[20*i+1] = Settings.TO_PIXELS * p1.y;
 			spriteVertices[20*i+2] = Color.toFloatBits(255, 255, 255, 255);
-			spriteVertices[20*i+3] = i;
+			spriteVertices[20*i+3] = p1.x;
 			spriteVertices[20*i+4] = 0;
 			
 			spriteVertices[20*i+5] = Settings.TO_PIXELS * (p1.x-previousKolm.x);
 			spriteVertices[20*i+6] = Settings.TO_PIXELS * (p1.y-previousKolm.y);
 			spriteVertices[20*i+7] = Color.toFloatBits(255, 255, 255, 255);
-			spriteVertices[20*i+8] = i;
+			spriteVertices[20*i+8] = p1.x;
 			spriteVertices[20*i+9] = 1;
 			
 			spriteVertices[20*i+10] = Settings.TO_PIXELS * (p2.x-kolm.x);
 			spriteVertices[20*i+11] = Settings.TO_PIXELS * (p2.y-kolm.y);
 			spriteVertices[20*i+12] = Color.toFloatBits(255, 255, 255, 255);
-			spriteVertices[20*i+13] = i+1;
+			spriteVertices[20*i+13] = p2.x;
 			spriteVertices[20*i+14] = 1;
 			
 			spriteVertices[20*i+15] = Settings.TO_PIXELS * p2.x;
 			spriteVertices[20*i+16] = Settings.TO_PIXELS * p2.y;
 			spriteVertices[20*i+17] = Color.toFloatBits(255, 255, 255, 255);
-			spriteVertices[20*i+18] = i+1;
+			spriteVertices[20*i+18] = p2.x;
 			spriteVertices[20*i+19] = 0;
 			
 			previousKolm = kolm;
@@ -262,6 +236,7 @@ public class Map {
 		batch.draw(trackTexture, spriteVertices, 0, spriteVertices.length);
 		for(SupportPole pole:poles)
 			pole.draw(batch);
+		batch.draw(flagTexture,level.getFlagX()*Settings.TO_PIXELS, level.getFlagY()*Settings.TO_PIXELS);
 		batch.end();
 	}
 

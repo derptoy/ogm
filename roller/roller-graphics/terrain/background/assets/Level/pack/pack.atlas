@@ -1,0 +1,62 @@
+
+pack.png
+size: 4046,422
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+0000cloud4
+  rotate: false
+  xy: 554, 34
+  size: 572, 388
+  orig: 572, 388
+  offset: 0, 0
+  index: -1
+0001cloud3
+  rotate: false
+  xy: 2, 2
+  size: 550, 420
+  orig: 550, 420
+  offset: 0, 0
+  index: -1
+0002cloud1
+  rotate: false
+  xy: 3590, 88
+  size: 326, 334
+  orig: 326, 334
+  offset: 0, 0
+  index: -1
+0003cloud0
+  rotate: false
+  xy: 1128, 142
+  size: 574, 280
+  orig: 574, 280
+  offset: 0, 0
+  index: -1
+ground
+  rotate: false
+  xy: 2948, 294
+  size: 640, 128
+  orig: 640, 128
+  offset: 0, 0
+  index: -1
+hill1
+  rotate: false
+  xy: 1704, 202
+  size: 620, 220
+  orig: 620, 220
+  offset: 0, 0
+  index: -1
+hill2
+  rotate: false
+  xy: 2326, 202
+  size: 620, 220
+  orig: 620, 220
+  offset: 0, 0
+  index: -1
+tree
+  rotate: false
+  xy: 3918, 166
+  size: 128, 256
+  orig: 128, 256
+  offset: 0, 0
+  index: -1

@@ -30,10 +30,12 @@ public class CartWheel {
 	private Fixture fixtureWheel;
 	private WheelJoint wheelJoint;
 	private Sprite wheelSprite;
+	private float offsetDir;
 	
-	float speed = 40;
+	float speed = 80;
 	
 	public CartWheel(World world, Body body, float x, float y, float cartWidth, float cartHeight, float offsetDir) {
+		this.offsetDir = offsetDir;
 		CircleShape circle1 = new CircleShape();
 		circle1.setRadius(wheelSize/2);
 		
@@ -44,9 +46,9 @@ public class CartWheel {
 		
 		FixtureDef fixtureDef1 = new FixtureDef();
 		fixtureDef1.shape = circle1;
-		fixtureDef1.density =		15f; 
-		fixtureDef1.friction = 		200f;
-		fixtureDef1.restitution = 	0.1f; // Make it bounce a little bit
+		fixtureDef1.density =		50f; 
+		fixtureDef1.friction = 		300f;
+		fixtureDef1.restitution = 	0.0f; // Make it bounce a little bit
 		fixtureWheel = wheel.createFixture(fixtureDef1);
 		
 		circle1.dispose();
@@ -59,13 +61,14 @@ public class CartWheel {
 		wheelJoint1Def.localAnchorA.set(offsetDir*(cartWidth/2 - wheelSize/2), - cartHeight/2);
 		wheelJoint1Def.localAnchorB.set(0, 0.0f);
 		wheelJoint1Def.enableMotor = false;
-		wheelJoint1Def.frequencyHz	=	50;
-		wheelJoint1Def.dampingRatio = 	0.1f;
+		wheelJoint1Def.frequencyHz	=	200;
+		wheelJoint1Def.dampingRatio = 	1.0f;
 		wheelJoint1Def.localAxisA.set(Vector2.Y);
 		wheelJoint = (WheelJoint)world.createJoint(wheelJoint1Def);
 		
 		wheelJoint.setMotorSpeed(0);
-		wheelJoint.setMaxMotorTorque(1*speed);
+//		if(offsetDir > 0)
+//			wheelJoint.setMaxMotorTorque(2*speed);
 		
 		wheelSprite = new Sprite(AssetManager.getTexture("cart/wheel.png"));
 		wheelSprite.setSize(1.2f*wheelSize*Settings.TO_PIXELS, 1.2f*wheelSize*Settings.TO_PIXELS);
@@ -86,12 +89,23 @@ public class CartWheel {
 		if(dir == 0) {
 			wheelJoint.enableMotor(false);
 			wheelJoint.setMotorSpeed(0);
+//			wheelJoint.setMaxMotorTorque(0);
 		} else {
-			wheelJoint.enableMotor(true);
-			wheelJoint.setMotorSpeed(dir * speed);
+//			wheelJoint.setMaxMotorTorque(1*speed);
+//			wheelJoint.enableMotor(true);
+//			wheelJoint.setMotorSpeed(dir * speed);
+			
+			if((dir > 0 && offsetDir < 0)
+					|| dir < 0 && offsetDir > 0) {
+				wheelJoint.setMaxMotorTorque(80.5f*speed);
+				wheelJoint.enableMotor(true);
+				wheelJoint.setMotorSpeed(dir * speed);
+			} else {
+				wheelJoint.setMaxMotorTorque(1*speed);
+				wheelJoint.enableMotor(true);
+				wheelJoint.setMotorSpeed(dir * speed*0.5f);
+			}
 		}
-		
-		System.out.println("Impuls " +wheelJoint.getMotorSpeed());
 	}
 
 }

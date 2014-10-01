@@ -1,11 +1,13 @@
 package cz.roller.game;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -21,15 +23,20 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 import cz.roller.game.cart.Cart;
-import cz.roller.game.menu.MainMenu;
+import cz.roller.game.level.Level;
+import cz.roller.game.menu.LevelSelector;
 import cz.roller.game.person.PersonManager;
 import cz.roller.game.util.AssetManager;
 import cz.roller.game.world.Settings;
@@ -42,12 +49,12 @@ public class MainGame implements Screen,InputProcessor {
 	private OrthographicCamera camera;
 	private Cart cart;
 	private Cart cart2;
-	private boolean debugRender = true;
+	private boolean debugRender = false;
 	@SuppressWarnings("unused")
 	private ShapeRenderer shapeRenderer;
 	private MouseJointDef jointDef;
 	
-	private enum State {START, NORMAL, HIDE}
+	private enum State {START, NORMAL, HIDE, END, ENDING}
 	private State state;
 	
 	private Vector3 cameraOffset = new Vector3(0,0,0);
@@ -59,16 +66,20 @@ public class MainGame implements Screen,InputProcessor {
 	private Map map;
 	private PersonManager personManager;
 	private boolean simulate;
+	private LinkedList<Joint> toRemove;
+	private HUDStage hud;
+	private Level level;
 	
-	public MainGame(Game game) {
+	public MainGame(Game game, Level lvl) {
 		this.game = game;
+		this.level = lvl;
 	}
 
 	@Override
 	public void show() {
 		AssetManager.waitToLoaded();
+		System.out.println("Loaded assets");
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//		camera.position.x = Gdx.graphics.getWidth()/2;
 		camera.position.x = -Gdx.graphics.getWidth()/2;
 		camera.position.y = Gdx.graphics.getHeight()/2;
 		
@@ -80,7 +91,15 @@ public class MainGame implements Screen,InputProcessor {
 		batch = new SpriteBatch();
 		state = State.START;
 		
-		endStage = new EndStage();
+		endStage = new EndStage(level, new EndGameListener() {
+			
+			@Override
+			public void endGame() {
+				state = State.END;
+				cart.impuls(0);
+				cart2.impuls(0);
+			}
+		});
 //		endStage.getViewport().setCamera(camera);
 		
 		world = new World(new Vector2(0, -9.81f), true); 
@@ -88,14 +107,14 @@ public class MainGame implements Screen,InputProcessor {
 		
 //		createBodies();
 		// *************************** CART
-		cart = new Cart(7.2f,11, world);
-		cart2 = new Cart(5,11, world);
+		cart = new Cart(7.2f,level.getStarty(), world);
+		cart2 = new Cart(5,level.getStarty(), world);
 //		cart2.setTint(new Color(0.5f,0.5f,0.5f,1));
 		cart.connect(cart2, world);
 		
 		Gdx.input.setInputProcessor(this);
 		
-		map = new Map(world);
+		map = new Map(world, level);
 		
 		createRagdoll();
 		
@@ -111,16 +130,16 @@ public class MainGame implements Screen,InputProcessor {
 		
 		ParticleEffect bombEffect = new ParticleEffect();
 		bombEffect.load(Gdx.files.internal("particles/blood.dt"), Gdx.files.internal("particles/"));
+		bombEffect.scaleEffect(0.1f);
 		bombEffectPool = new ParticleEffectPool(bombEffect, 1, 2);
-		
-		PooledEffect effect = bombEffectPool.obtain();
-		effect.setPosition(10, 10);
-		effect.scaleEffect(0.1f);
-		effects.add(effect);
 		
 		shapeRenderer = new ShapeRenderer();
 		
 		registerBloodListener();
+		
+		toRemove = new LinkedList<Joint>();
+		hud = new HUDStage(level);
+		ScoreManager.reset();
 	}
 
 	private void registerBloodListener() {
@@ -133,6 +152,47 @@ public class MainGame implements Screen,InputProcessor {
 			
 			@Override
 			public void postSolve(Contact contact, ContactImpulse impulse) {
+				if(state == State.ENDING)
+					return;
+					
+				Body cBody = null;
+				
+				if(contact.getFixtureB().getUserData() != null
+						&& contact.getFixtureB().getUserData().equals(Type.PERSON)
+						&& (contact.getFixtureA().getUserData() == null || !contact.getFixtureA().getUserData().equals(Type.PERSON)))
+						cBody = contact.getFixtureB().getBody();
+				if(	contact.getFixtureA().getUserData() != null
+						&& contact.getFixtureA().getUserData().equals(Type.PERSON)
+						&& (contact.getFixtureB().getUserData() == null || !contact.getFixtureB().getUserData().equals(Type.PERSON)))
+					cBody = contact.getFixtureA().getBody();
+				
+				float limit = 1.2f;
+				if(cBody != null && impulse.getNormalImpulses()[0] >limit) {
+					Vector2 vec = contact.getWorldManifold().getPoints()[0];
+					
+					BodyDamage dmg = ((BodyDamage)cBody.getUserData());
+					for(JointEdge joint:cBody.getJointList()) {
+						if(!Type.PERSON_DECAPITATED.equals(joint.joint.getUserData())
+								&& dmg.damage < 500) {
+							
+							// DMG
+							float ll = (impulse.getNormalImpulses()[0] - limit) / 0.01f;
+							dmg.damage += ll;
+							ScoreManager.doneDamage(ll);
+							
+							toRemove.add(joint.joint);
+//							cBody.setUserData(Type.PERSON_DECAPITATED);
+							joint.joint.setUserData(Type.PERSON_DECAPITATED);
+							
+							PooledEffect effect = bombEffectPool.obtain();
+							effect.reset();
+							effect.start();
+							effect.setPosition(vec.x*Settings.TO_PIXELS, vec.y*Settings.TO_PIXELS);
+							effects.add(effect);
+						}
+					}
+				}
+				
 			}
 			
 			@Override
@@ -142,37 +202,10 @@ public class MainGame implements Screen,InputProcessor {
 			
 			@Override
 			public void beginContact(Contact contact) {
-				Body cBody = null;
-				
-				if(contact.getFixtureA().getBody().equals(map.getTrack()))
-					cBody = contact.getFixtureB().getBody();
-				else if(contact.getFixtureB().getBody().equals(map.getTrack()))	
-					cBody = contact.getFixtureA().getBody();
-				
-				if(contact.getFixtureA().getUserData() != null
-						&& contact.getFixtureB().getUserData() != null) {
-					if(	contact.getFixtureA().getUserData().equals(Type.TRACK)
-							&& contact.getFixtureB().getUserData().equals(Type.PERSON))
-						cBody = contact.getFixtureB().getBody();
-					if(	contact.getFixtureB().getUserData().equals(Type.TRACK)
-							&& contact.getFixtureA().getUserData().equals(Type.PERSON))
-						cBody = contact.getFixtureA().getBody();
+				if((contact.getFixtureA().getFilterData().categoryBits == Settings.CATEGORY_END_OF_LEVEL) 
+						|| (contact.getFixtureB().getFilterData().categoryBits == Settings.CATEGORY_END_OF_LEVEL)) {
+					state = State.ENDING;
 				}
-				
-				if(cBody != null && cBody.getLinearVelocity().len() > 5f) {
-					System.out.println("Speed: "+cBody.getLinearVelocity().len());
-					Vector2 vec = contact.getWorldManifold().getPoints()[0];
-			        
-					
-					
-					PooledEffect effect = bombEffectPool.obtain();
-					effect.scaleEffect(0.1f);
-					effect.reset();
-					effect.start();
-					effect.setPosition(vec.x*Settings.TO_PIXELS, vec.y*Settings.TO_PIXELS);
-					effects.add(effect);
-				}
-				
 			}
 		});
 	}
@@ -195,15 +228,15 @@ public class MainGame implements Screen,InputProcessor {
 			if( dist.len() > 100 
 					&& cameraOffset.x >= Gdx.graphics.getWidth()/2 
 					&& cameraOffset.y >= Gdx.graphics.getHeight()/2
-					&& cameraOffset.x <= 2400-Gdx.graphics.getWidth()/2) {
-				dist.scl(-0.01f);
+					&& cameraOffset.x <= level.getLevelWidth() - Gdx.graphics.getWidth()/2) {
+				dist.scl(-0.02f);
 //				dist.scl(-0.1f);
 				cameraOffset.add(dist);
 			}
 			if(cameraOffset.x < Gdx.graphics.getWidth()/2)
 				cameraOffset.x = Gdx.graphics.getWidth()/2;
-			else if(cameraOffset.x > 2400-Gdx.graphics.getWidth()/2)
-				cameraOffset.x =2400-Gdx.graphics.getWidth()/2;
+			else if(cameraOffset.x > level.getLevelWidth() - Gdx.graphics.getWidth()/2)
+				cameraOffset.x = level.getLevelWidth() - Gdx.graphics.getWidth()/2;
 			if(cameraOffset.y < Gdx.graphics.getHeight()/2)
 				cameraOffset.y = Gdx.graphics.getHeight()/2;
 		} else if(state == State.START){
@@ -211,13 +244,14 @@ public class MainGame implements Screen,InputProcessor {
 			
 			if(camera.position.x >= Gdx.graphics.getWidth()/2) {
 				state = State.NORMAL;
+				simulate = true;
 				cameraOffset.x = Gdx.graphics.getWidth()/2;
 				camera.position.x = Gdx.graphics.getWidth()/2;
 			}
-		} else {
+		} else if(state == State.END){
 			camera.position.y += Gdx.graphics.getHeight()/20f;
 			if(camera.position.y >= 2.0f*Gdx.graphics.getHeight()) {
-				game.setScreen(new MainMenu(game));
+				game.setScreen(new LevelSelector(game));
 			}
 		}
 		
@@ -238,36 +272,13 @@ public class MainGame implements Screen,InputProcessor {
 		if(debugRender)
 			debugRenderer.render(world, camera.combined.cpy().scl(Settings.TO_PIXELS));
 		
-		map.draw(batch);
-		
 		personManager.draw(batch);
 		
-//		batch.begin();
-//		batch.draw(img, 0, 0);
-//		batch.end();
+		map.draw(batch);
 		
 		if(simulate)
 			world.step(1/60f, 8, 3);
 		
-//		shapeRenderer.setProjectionMatrix(camera.combined);
-//		shapeRenderer.setColor(1, 1, 1, 1);
-//		shapeRenderer.begin(ShapeType.Line);
-//		for(int i=0;i<points.length-1;i++)
-//			shapeRenderer.line(points[i], points[i+1]);
-//		shapeRenderer.end();
-		
-//		shapeRenderer.setProjectionMatrix(camera.combined);
-//		shapeRenderer.setColor(1, 0, 0, 1);
-//		shapeRenderer.begin(ShapeType.Filled);
-//		for(int i=0;i<dataSet.length;i++)
-//			shapeRenderer.circle(dataSet[i].x, dataSet[i].y, 0.3f);
-//		shapeRenderer.end();
-//		shapeRenderer.setProjectionMatrix(camera.combined);
-//		shapeRenderer.setColor(1, 0, 0, 1);
-//		shapeRenderer.begin(ShapeType.Point);
-//		for(int i=0;i<points.length;i++)
-//			shapeRenderer.point(points[i].x, points[i].y,0);
-//		shapeRenderer.end();
 		batch.begin();
 		// Update and draw effects:
 		for (int i = effects.size - 1; i >= 0; i--) {
@@ -276,22 +287,34 @@ public class MainGame implements Screen,InputProcessor {
 		    if (effect.isComplete()) {
 		        effect.free();
 		        effects.removeIndex(i);
-		    	
-//		        Vector2 vec = person.getPosition();
-//		        
-//		    	effect = bombEffectPool.obtain();
-//		    	effect.reset();
-//		    	effect.start();
-//				effect.setPosition(vec.x, vec.y);
-//				effects.add(effect);
-//				System.out.println("Blood");
 		    }
 		}
 		batch.end();
 		
-		if(simulate)
+		if(state == State.ENDING) {
 			endStage.act();
-		endStage.draw();
+		}
+		if(state != State.END)
+			endStage.draw();
+		
+		Iterator<Joint> it = toRemove.iterator();
+		while(it.hasNext()) {
+			Joint j = it.next();
+			world.destroyJoint(j);
+			it.remove();
+			
+			ScoreManager.lostLimb();
+		}
+		
+		if(state != State.END) {
+			hud.draw();
+			hud.update();
+		}
+		
+		if(state != State.END
+				&& state != State.ENDING
+				&& state != State.START)
+			ScoreManager.updateTime(Gdx.graphics.getDeltaTime());
 	}
 	
 	@Override
@@ -302,25 +325,18 @@ public class MainGame implements Screen,InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if(Keys.A == keycode) {
+		if(Keys.A == keycode && state == State.NORMAL) {
 			cart.impuls(1);
 			cart2.impuls(1);
-		} else if(Keys.D == keycode) {
+		} else if(Keys.D == keycode && state == State.NORMAL) {
 			cart.impuls(-1);
 			cart2.impuls(-1);
-		} else if(Keys.SPACE == keycode) {
-		} else if(Keys.K == keycode) {
+		} 
+		else if(Keys.K == keycode) {
 			debugRender = !debugRender;
-		} else if(Keys.Q == keycode) {
-			camera.zoom += 0.1f;
-		}  else if(Keys.S == keycode) {
-			simulate = !simulate;
-		} else if(Keys.F == keycode) {
-			world.step(1/60f, 8, 3);
-		} else if(Keys.E == keycode) {
-			camera.zoom -= 0.1f;
-		} else if(Keys.ESCAPE == keycode) {
-			state = State.HIDE;
+		} 
+		else if(Keys.ESCAPE == keycode) {
+			state = State.END;
 		}
 		return false;
 	}
@@ -359,7 +375,6 @@ public class MainGame implements Screen,InputProcessor {
 					jointDef.bodyB = fixture.getBody();
 					jointDef.target.set(	tmp.x/Settings.TO_PIXELS,
 											tmp.y/Settings.TO_PIXELS);
-					System.out.println("Target "+jointDef.target);
 					joint = (MouseJoint)world.createJoint(jointDef);
 					return false;
 				}

@@ -2,7 +2,8 @@ package cz.roller;
 
 import com.badlogic.gdx.Game;
 
-import cz.roller.game.MainGame;
+import cz.roller.game.level.LevelsData;
+import cz.roller.game.menu.MainMenu;
 import cz.roller.game.util.AssetManager;
 
 public class Roller extends Game {
@@ -12,8 +13,8 @@ public class Roller extends Game {
 	@Override
 	public void create() {
 		AssetManager.init();
-		setScreen(new MainGame(this));
-		System.out.println(System.currentTimeMillis()+" CREATE");
+		LevelsData.init();
+		setScreen(new MainMenu(this));
 	}
 
 	@Override

@@ -103,9 +103,11 @@ public class Cart {
 
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = box;
-		fixtureDef.density = 8f; 
+		fixtureDef.density = 80f; 
 		fixtureDef.friction = 0.4f;
-		fixtureDef.restitution = 0.3f; // Make it bounce a little bit
+		fixtureDef.restitution = 0.0f; // Make it bounce a little bit
+		fixtureDef.filter.categoryBits = Settings.CATEGORY_WORLD | Settings.CATEGORY_END_OF_LEVEL;
+//		fixtureDef.filter.maskBits = Settings.CATEGORY_WORLD | Settings.CATEGORY_END_OF_LEVEL;
 		fixture = body.createFixture(fixtureDef);
 		
 		box.dispose();
@@ -114,7 +116,7 @@ public class Cart {
 		fixtureDefSide.shape = boxSide;
 		fixtureDefSide.density = 8f; 
 		fixtureDefSide.friction = 0.4f;
-		fixtureDefSide.restitution = 0.3f; // Make it bounce a little bit
+		fixtureDefSide.restitution = 0.0f; // Make it bounce a little bit
 		fixtureSide = body.createFixture(fixtureDefSide);
 		
 		boxSide.dispose();
@@ -123,7 +125,7 @@ public class Cart {
 		fixtureDefSide2.shape = boxSide2;
 		fixtureDefSide2.density = 8f; 
 		fixtureDefSide2.friction = 0.4f;
-		fixtureDefSide2.restitution = 0.3f; // Make it bounce a little bit
+		fixtureDefSide2.restitution = 0.0f; // Make it bounce a little bit
 		fixtureSide2 = body.createFixture(fixtureDefSide2);
 		
 		boxSide2.dispose();

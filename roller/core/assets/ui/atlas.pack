@@ -68,3 +68,10 @@ select.down
   orig: 105, 64
   offset: 0, 0
   index: -1
+end.up
+  rotate: false
+  xy: 0, 170
+  size: 105, 64
+  orig: 105, 64
+  offset: 0, 0
+  index: -1
