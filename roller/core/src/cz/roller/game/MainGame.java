@@ -333,7 +333,7 @@ public class MainGame implements Screen,InputProcessor {
 			cart2.impuls(-1);
 		} 
 		else if(Keys.K == keycode) {
-			debugRender = !debugRender;
+//			debugRender = !debugRender;
 		} 
 		else if(Keys.ESCAPE == keycode) {
 			state = State.END;
