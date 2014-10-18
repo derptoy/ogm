@@ -3,35 +3,81 @@ package cz.surwild.main;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+import cz.surwild.ui.Popup;
+import cz.surwild.weapon.BulletManager;
 
 public class Game extends ApplicationAdapter implements InputProcessor {
-	SpriteBatch batch;
+	private SpriteBatch batch;
 	private HeroController heroController;
 	private Map map;
 	private OrthographicCamera camera;
+	private Inventory inventory;
+	private Stage ui;
+	private OrthographicCamera uicamera;
+	private boolean inventoryVisible;
+	private BulletManager bulletManager;
+	private Popup popup;
+	private InputMultiplexer mainInput;
 	
 	@Override
 	public void create () {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();;
+		
+		Assets.init();
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false,w,h);
 		camera.position.x = 650;
 		camera.position.y = 1100;
+		camera.zoom = 0.5f;
 		camera.update();
+		
+		ui = new Stage();
+		
+		uicamera = new OrthographicCamera();
+		uicamera.setToOrtho(false,w,h);
+		uicamera.zoom = 0.5f;
+		uicamera.update();
 		
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(camera.combined);
 		
-		Gdx.input.setInputProcessor(this);
+//		FreetypeFonts.init();
 		
 		map = new Map(batch, camera);
-		heroController = new HeroController(map);
+		bulletManager = new BulletManager(map);
+		heroController = new HeroController(map, bulletManager);
+		
+		inventory = new Inventory();
+		
+		ui.addActor(inventory);
+		popup = new Popup();
+		ui.addActor(popup);
+		inventory.load(popup);
+		
+		mainInput = new InputMultiplexer(this,ui);
+		Gdx.input.setInputProcessor(mainInput);
+		
+		SoundManager.init();
 	}
 
 	@Override
@@ -44,15 +90,33 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 
 		// Map
 		map.setProjectionMatrix(camera);
-		map.render();
+//		map.render();
+		batch.begin();
+		map.renderGround(batch);
+		batch.end();
 		
 		// Hero
 		batch.begin();
 		heroController.render(batch);
+		bulletManager.render(batch);
 		batch.end();
 		
-		heroController.processKey();
+		batch.begin();
+		map.renderWalkable();
+		map.renderCollision();
+		batch.end();
+		
+		if(inventoryVisible) {
+			ui.getViewport().setCamera(uicamera);
+			ui.act();
+			ui.draw();
+		}
+		
+		if( !inventoryVisible) 
+			heroController.processKey();
 		heroController.update();
+		
+		bulletManager.update();
 	}
 
 	@Override
@@ -65,7 +129,12 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 			camera.position.x -= 50;
 		} else if(Keys.RIGHT == keycode) {
 			camera.position.x += 50;
+		} else if(Keys.T == keycode) {
+			inventoryVisible = !inventoryVisible;
 		}
+		
+		if(inventoryVisible)
+			inventory.keyDown(keycode);
 		
 		return false;
 	}

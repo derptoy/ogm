@@ -1,0 +1,48 @@
+{
+	com.badlogic.gdx.graphics.Color: {
+		white: { r: 1, g: 1, b: 1, a: 1 },
+		black: { r: 0, g: 0, b: 0, a: 1 },
+		gray:  { r: 0.3, g: 0.3, b: 0.3, a: 1 },
+		red:   { r: 1, g: 0, b: 0, a: 1 },
+		green: { r: 0, g: 1, b: 0, a: 1 },
+		blue:  { r: 0, g: 0, b: 1, a: 1 }
+	},
+	com.badlogic.gdx.graphics.g2d.BitmapFont: {
+		white64: { file: font/white64.fnt }, 
+		black64: { file: font/black64.fnt },
+		white32: { file: font/white32.fnt },
+		black32: { file: font/black32.fnt },
+		white16: { file: font/white16.fnt },
+		black16: { file: font/black16.fnt },
+		red32: { file: font/red32.fnt },
+		ken12: { file: fonts/kenpixel.fnt},
+	},
+	com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+		default: { font: black32, fontColor: black },
+		red:	 { font: red32, fontColor :red},
+		big:     { font: white64, fontColor: white },
+		white:   { font: white32, fontColor: white },
+		small:   { font: white16, fontColor: white },
+		ken12:   { font: ken12,   fontColor: white},
+	},
+	com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+		popup: { titleFont: ken12, titleFontColor: gray, background: default-window},
+	},
+	com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+
+		default: {
+		font: ken12, fontColor: white, background: default-select,
+		scrollStyle: default,
+		listStyle: { font: ken12 , selection: default-select-selection }
+	}
+	
+},
+	com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+
+		default: { vScroll: default-scroll, hScrollKnob: default-round-large, background: default-rect, hScroll: default-scroll, vScrollKnob: default-round-large },
+	
+},
+	com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+    		default: { fontColorUnselected: white, selection: default-rect-pad, fontColorSelected: white, font: ken12 }
+	},
+}
