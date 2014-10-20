@@ -31,4 +31,8 @@ public class Tree {
 	public boolean isDead() {
 		return dead;
 	}
+
+	public TextureRegion getTexture() {
+		return texture;
+	}
 }

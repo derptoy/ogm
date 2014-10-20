@@ -31,10 +31,12 @@ public class HeroController {
 	private Tree harvest;
 	private BulletManager bulletManager;
 	private long lastFire;
+	private Inventory inventory;
 	
-	public HeroController(Map map, BulletManager bulletManager) {
+	public HeroController(Map map, BulletManager bulletManager, Inventory inventory) {
 		this.map = map;
 		this.bulletManager = bulletManager;
+		this.inventory = inventory;
 		
 		textures = new Texture[5];
 		textures[0] = new Texture(Gdx.files.internal("hero/hero_0002_up.png"));
@@ -67,6 +69,7 @@ public class HeroController {
 				harvestTimer = 0;
 				
 				harvest.destroy();
+				inventory.addItem(harvest);
 				SoundManager.getSound("cutting_tree").stop();
 				SoundManager.getSound("falling_tree").play();
 				

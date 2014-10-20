@@ -64,10 +64,9 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 //		FreetypeFonts.init();
 		
 		map = new Map(batch, camera);
-		bulletManager = new BulletManager(map);
-		heroController = new HeroController(map, bulletManager);
-		
 		inventory = new Inventory();
+		bulletManager = new BulletManager(map);
+		heroController = new HeroController(map, bulletManager, inventory);
 		
 		ui.addActor(inventory);
 		popup = new Popup();
