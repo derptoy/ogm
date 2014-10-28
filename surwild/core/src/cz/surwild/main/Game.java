@@ -8,18 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import cz.surwild.ui.Popup;
 import cz.surwild.weapon.BulletManager;
@@ -46,9 +35,9 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false,w,h);
-		camera.position.x = 650;
-		camera.position.y = 1100;
-		camera.zoom = 0.5f;
+		camera.position.x = 1300;
+		camera.position.y = 2200;
+		camera.zoom = 1.0f;
 		camera.update();
 		
 		ui = new Stage();
@@ -63,6 +52,8 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 		
 //		FreetypeFonts.init();
 		
+		SoundManager.init();
+		
 		map = new Map(batch, camera);
 		inventory = new Inventory();
 		bulletManager = new BulletManager(map);
@@ -75,8 +66,6 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 		
 		mainInput = new InputMultiplexer(this,ui);
 		Gdx.input.setInputProcessor(mainInput);
-		
-		SoundManager.init();
 	}
 
 	@Override
@@ -130,6 +119,8 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 			camera.position.x += 50;
 		} else if(Keys.T == keycode) {
 			inventoryVisible = !inventoryVisible;
+		} else if(Keys.P == keycode) {
+			map.toggleDebug();
 		}
 		
 		if(inventoryVisible)

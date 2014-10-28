@@ -12,6 +12,9 @@ public class SoundManager {
 	public static void init() {
 		sounds.put("cutting_tree", Gdx.audio.newSound(Gdx.files.internal("sound/tree/cutting_tree_limb.mp3")));
 		sounds.put("falling_tree", Gdx.audio.newSound(Gdx.files.internal("sound/tree/tree_fall_down.mp3")));
+		
+		sounds.put("shotgun_fire", Gdx.audio.newSound(Gdx.files.internal("sound/weapon/shotgun.mp3")));
+		sounds.put("shotgun_reload", Gdx.audio.newSound(Gdx.files.internal("sound/weapon/shotgun_reload.mp3")));
 	}
 	
 	public static Sound getSound(String key) {

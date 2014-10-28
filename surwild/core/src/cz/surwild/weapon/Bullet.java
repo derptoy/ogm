@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import cz.surwild.main.Map;
 import cz.surwild.util.Point2D;
 
 
@@ -19,8 +20,8 @@ public class Bullet {
 	}
 
 	public void update() {
-		position.x += Gdx.graphics.getDeltaTime() * direction.x * 100f;
-		position.y += Gdx.graphics.getDeltaTime() * direction.y * 100f;
+		position.x += Gdx.graphics.getDeltaTime() * direction.x * 200f;
+		position.y += Gdx.graphics.getDeltaTime() * direction.y * 200f;
 	}
 	
 	public void render(SpriteBatch batch) {
@@ -28,11 +29,11 @@ public class Bullet {
 	}
 
 	public int getIndexX() {
-		return (int)position.x/16;
+		return (int)position.x/Map.TILE_SIZE;
 	}
 
 	public int getIndexY() {
-		return (int)position.y/16;
+		return (int)position.y/Map.TILE_SIZE;
 	}
 
 	public void setPosition(Vector2 origin) {

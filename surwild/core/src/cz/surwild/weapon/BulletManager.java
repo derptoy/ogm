@@ -45,9 +45,9 @@ public class BulletManager {
 			bullet.update();
 			
 			if(bullet.getPosition().x < 0
-					|| bullet.getPosition().x >= Map.MAP_X_TILECOUNT*16
+					|| bullet.getPosition().x >= Map.MAP_X_TILECOUNT*Map.TILE_SIZE
 					|| bullet.getPosition().y < 0
-					|| bullet.getPosition().y >= Map.MAP_Y_TILECOUNT*16) {
+					|| bullet.getPosition().y >= Map.MAP_Y_TILECOUNT*Map.TILE_SIZE) {
 				iter.remove();
 				pool.add(bullet);
 			} else if(map.collisionTile(bullet.getIndexX(), bullet.getIndexY())) {

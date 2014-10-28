@@ -22,7 +22,9 @@ public class Map {
 	
 	public static final int MAP_X_TILECOUNT = 100;
 	public static final int MAP_Y_TILECOUNT = 100;
-	private static final boolean DEBUG = true;
+	public static final int TILE_SIZE = 32;
+	
+	private static boolean DEBUG = true;
 	private TiledMap tiledMap;
 	private TiledMapRenderer tiledMapRenderer;
 	private TiledMapTileLayer collisionLayer;
@@ -32,16 +34,23 @@ public class Map {
 	private MapLayer treeLayer;
 	
 	private LinkedList<Tree> treeList;
+	private TiledMapTileLayer groundLayer2;
+	private Object getLayers;
+	private TiledMapTileLayer folliageLayer2;
+	private TiledMapTileLayer walkableLayer2;
 
 	public Map(SpriteBatch batch, OrthographicCamera camera) {
-		tiledMap = new TmxMapLoader().load(Gdx.files.internal("map/map.tmx").path());
+		tiledMap = new TmxMapLoader().load(Gdx.files.internal("map/map2.tmx").path());
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap,batch);
 		tiledMapRenderer.setView(camera);
 		
 		collisionLayer = (TiledMapTileLayer)tiledMap.getLayers().get("collision");
 		groundLayer = (TiledMapTileLayer)tiledMap.getLayers().get("ground");
+		groundLayer2 = (TiledMapTileLayer)tiledMap.getLayers().get("ground2");
 		folliageLayer = (TiledMapTileLayer)tiledMap.getLayers().get("folliage");
+		folliageLayer2 = (TiledMapTileLayer)tiledMap.getLayers().get("folliage2");
 		walkableLayer = (TiledMapTileLayer)tiledMap.getLayers().get("walkable");
+		walkableLayer2 = (TiledMapTileLayer)tiledMap.getLayers().get("walkable2");
 		
 		treeLayer = tiledMap.getLayers().get("trees");
 		treeList = new LinkedList<Tree>();
@@ -60,14 +69,16 @@ public class Map {
 	
 	public void renderGround(SpriteBatch batch) {
 		tiledMapRenderer.renderTileLayer(groundLayer);
+		tiledMapRenderer.renderTileLayer(groundLayer2);
 		tiledMapRenderer.renderTileLayer(folliageLayer);
+		tiledMapRenderer.renderTileLayer(folliageLayer2);
 		Iterator<Tree> it = treeList.iterator();
 		while(it.hasNext()) {
 			Tree tree = it.next();
 			tree.render(batch);
 			
 			if(tree.isDead()) {
-				collisionLayer.getCell(tree.getPosition().x/16, tree.getPosition().y/16).setTile(null);
+				collisionLayer.getCell(tree.getPosition().x/TILE_SIZE, tree.getPosition().y/TILE_SIZE).setTile(null);
 				it.remove();
 			}
 		}
@@ -75,6 +86,7 @@ public class Map {
 	
 	public void renderWalkable() {
 		tiledMapRenderer.renderTileLayer(walkableLayer);
+		tiledMapRenderer.renderTileLayer(walkableLayer2);
 	}
 	
 	public void renderCollision() {
@@ -87,15 +99,15 @@ public class Map {
 	}
 	
 //	public boolean terrainCollisionX(Rectangle spriteRect, Vector2 direction) {
-//		int xpart = (int)(spriteRect.x+spriteRect.width/2)/16;
-//		int ypart = (int)(spriteRect.y+spriteRect.height/2)/16;
+//		int xpart = (int)(spriteRect.x+spriteRect.width/2)/TILE_SIZE;
+//		int ypart = (int)(spriteRect.y+spriteRect.height/2)/TILE_SIZE;
 //		
 //		return terrainCollision(spriteRect, UtilityFunctions.getSurrounding(xpart, ypart, direction));
 //	}
 //	
 //	public boolean terrainCollisionY(Rectangle spriteRect, Vector2 direction) {
-//		int xpart = (int)(spriteRect.x+spriteRect.width/2)/16;
-//		int ypart = (int)(spriteRect.y+spriteRect.height/2)/16;
+//		int xpart = (int)(spriteRect.x+spriteRect.width/2)/TILE_SIZE;
+//		int ypart = (int)(spriteRect.y+spriteRect.height/2)/TILE_SIZE;
 //		
 //		return terrainCollision(spriteRect, UtilityFunctions.getSurrounding(xpart, ypart));
 //	}
@@ -123,7 +135,7 @@ public class Map {
 
 
 	private boolean aabb(CustomRect heroRect, int xlocal, int ylocal) {
-		CustomRect target = new CustomRect("",xlocal*16, ylocal*16, 16, 16);
+		CustomRect target = new CustomRect("",xlocal*TILE_SIZE, ylocal*TILE_SIZE, TILE_SIZE, TILE_SIZE);
 		return collisionCheck(heroRect, target);
 	}
 
@@ -146,12 +158,16 @@ public class Map {
 
 	public Tree getTree(int checkX, int checkY) {
 		for(Tree tree: treeList) {
-			if((tree.getPosition().x+8)/16 == checkX
-					&& (tree.getPosition().y+8)/16 == checkY)
+			if((tree.getPosition().x+TILE_SIZE/2)/TILE_SIZE == checkX
+					&& (tree.getPosition().y+TILE_SIZE/2)/TILE_SIZE == checkY)
 				return tree;
 		}
 		
 		return null;
+	}
+
+	public void toggleDebug() {
+		DEBUG = !DEBUG;
 	}
 
 }
